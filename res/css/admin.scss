@@ -323,6 +323,7 @@ main {
   aside.lnb {
     flex: 0 1 250px;
     min-height: 100%;
+    padding: 0 !important;
   }
   aside.lnb.is-extended {
     flex: 0 1 auto;
@@ -359,6 +360,8 @@ main {
     gap: 8px;
     width: 250px;
     height: 100%;
+    padding: 0;
+    margin: 0;
     .control-bar {
       display: flex;
       flex-direction: column;
@@ -374,13 +377,13 @@ main {
     .notice-items {
       box-sizing: border-box;
       margin-bottom: auto;
-      width: 90%;
-      padding: 8px;
+      width: 100%;
+      padding: 0;
       display: flex;
       flex-direction: column;
       gap: 0;
       .notice-item-row {
-        padding-left: 16px;
+        padding-left: 0;
         display: flex;
         gap: 16px;
         .notice-item {
@@ -506,20 +509,49 @@ main {
     width: 250px;
     height: auto;
     gap: 0;
+    padding: 0;
+    margin: 0;
     .menu-item {
       display: flex;
       width: 100%;
       height: auto;
       line-height: 1;
-      padding: 32px 32px 32px 0;
+      padding: 16px 0 !important;
+      margin: 0 !important;
       justify-content: flex-start;
       align-items: center;
-      gap: 16px;
-      text-align: center;
+      gap: 8px;
+      text-align: left;
       color: black;
       box-sizing: border-box;
       text-decoration: none;
       @include menu-font;
+      
+      // 아이콘 스타일 추가
+      [class$="-icon"] {
+        width: 0;
+        height: 0;
+        display: none;
+      }
+      
+      // 아이콘 관련 추가 스타일
+      .pageview-icon,
+      .seo-icon,
+      .board-icon,
+      .security-icon,
+      .sitemap-icon,
+      .notice-list-icon2 {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      span {
+        margin-left: 0;
+        padding-left: 0;
+      }
     }
     .menu-item.is-active {
       background: $hover-color;

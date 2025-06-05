@@ -534,6 +534,7 @@ main {
 main aside.lnb {
   flex: 0 1 250px;
   min-height: 100%;
+  padding: 0 !important;
 }
 main aside.lnb.is-extended {
   flex: 0 1 auto;
@@ -570,6 +571,8 @@ main .notice-tree {
   gap: 8px;
   width: 250px;
   height: 100%;
+  padding: 0;
+  margin: 0;
 }
 main .notice-tree .control-bar {
   display: flex;
@@ -586,14 +589,14 @@ main .notice-tree .control-bar .status b {
 main .notice-tree .notice-items {
   box-sizing: border-box;
   margin-bottom: auto;
-  width: 90%;
-  padding: 8px;
+  width: 100%;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 main .notice-tree .notice-items .notice-item-row {
-  padding-left: 16px;
+  padding-left: 0;
   display: flex;
   gap: 16px;
 }
@@ -719,22 +722,46 @@ main .menu-items {
   width: 250px;
   height: auto;
   gap: 0;
+  padding: 0;
+  margin: 0;
 }
 main .menu-items .menu-item {
   display: flex;
   width: 100%;
   height: auto;
   line-height: 1;
-  padding: 32px 32px 32px 0;
+  padding: 16px 0 !important;
+  margin: 0 !important;
   justify-content: flex-start;
   align-items: center;
-  gap: 16px;
-  text-align: center;
+  gap: 8px;
+  text-align: left;
   color: black;
   box-sizing: border-box;
   text-decoration: none;
   font-size: 1.2rem;
   font-weight: 900;
+}
+main .menu-items .menu-item [class$=-icon] {
+  width: 0;
+  height: 0;
+  display: none;
+}
+main .menu-items .menu-item .pageview-icon,
+main .menu-items .menu-item .seo-icon,
+main .menu-items .menu-item .board-icon,
+main .menu-items .menu-item .security-icon,
+main .menu-items .menu-item .sitemap-icon,
+main .menu-items .menu-item .notice-list-icon2 {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+main .menu-items .menu-item span {
+  margin-left: 0;
+  padding-left: 0;
 }
 main .menu-items .menu-item.is-active {
   background: #e7e7e7;
