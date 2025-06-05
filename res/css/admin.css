@@ -419,8 +419,7 @@ button.text-icon:hover, button.image-icon:hover, button.del-icon:hover {
 .h-stack > section > article img {
   max-width: 900px;
   aspect-ratio: 1/1;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 
 .v-stack {
@@ -726,7 +725,7 @@ main .menu-items .menu-item {
   width: 100%;
   height: auto;
   line-height: 1;
-  padding: 32px;
+  padding: 32px 32px 32px 0;
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
@@ -916,7 +915,6 @@ article.card-item.de-animation {
   padding-left: 0.5rem;
 }
 .toastui-chart-wrapper .toastui-chart-export-menu {
-  width: -moz-fit-content;
   width: fit-content;
   position: absolute;
   transform: translate(688px, -518px) !important;
@@ -982,7 +980,6 @@ article.card-item.de-animation {
 }
 
 .table {
-  width: -moz-fit-content;
   width: fit-content;
 }
 
@@ -1065,4 +1062,6 @@ article.card-item.de-animation {
     height: 200px;
     position: relative;
   }
-} /*# sourceMappingURL=admin.css.map */
+} 
+
+/*# sourceMappingURL=admin.css.map */
