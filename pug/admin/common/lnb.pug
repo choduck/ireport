@@ -1,0 +1,33 @@
+script(type="text/x-template" id="lnb")
+  aside.lnb.is-extended
+    .menu-items
+      //b-image(:src="isLogoHovered ? '/img/logo1_hover.png' : themeClass['is-light-theme'] == true ? '/img/logo1.png' : '/img/logo1_gray.png'" alt="Many Stallings Company Logo" title="Many Stallings Company Logo" style='width:200px;padding:16px;' @mouseenter.native="!themeClass['is-light-theme'] ? isLogoHovered = true : isLogoHovered = false" @mouseleave.native="isLogoHovered = false")
+      a.menu-item(:class="{'is-active': menuName == '어드민/페이지뷰'}" href="/어드민/트래픽")
+        .pageview-icon
+        span 페이지뷰
+      a.menu-item(:class="{'is-active': menuName == '어드민/SEO설정'}" href="/어드민/SEO설정")
+        .seo-icon
+        span SEO설정
+      a.menu-item(:class="{'is-active': menuName == '어드민/게시판' || menuName == '어드민/게시판/리스트'}" href="/어드민/게시판")
+        .board-icon
+        span 게시판
+      a.menu-item(:class="{'is-active': menuName == '어드민/보안설정'}" href="/어드민/보안설정")
+        .security-icon
+        span 보안설정
+      a.menu-item(:class="{'is-active': menuName == '어드민/디도스모니터링'}" href="/어드민/디도스모니터링")
+        .security-icon
+        span 디도스 모니터링
+      a.menu-item(:class="{'is-active': menuName == '어드민/사이트맵'}" href="/어드민/사이트맵")
+        .sitemap-icon
+        span 사이트맵
+      .menu-item.is-blank
+      a#logout.menu-item(href="/어드민/로그아웃") 로그아웃
+    .notice-tree(v-if="menuName == '어드민/게시판' || menuName == '어드민/게시판/리스트'" :class="{ inflated: menuName == '어드민/게시판'}")
+      .notice-items
+        .control-bar
+          .status
+            b All
+            span 1
+        a.notice-item-row(href="/어드민/게시판조회요청?n=n1" :class="{ 'is-active': itemFocused['회사 뉴스'] }")
+          .notice-list-icon2
+          .notice-item 회사 뉴스

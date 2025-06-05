@@ -1,0 +1,661 @@
+html(style='width: 100%;')
+	head
+		title=title
+		meta(name='description' content=description)
+		meta(name='keywords' content='아이리포트')
+		meta(property="og:type" content="website")
+		meta(property="og:site_name" content="ireport")
+		meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | 아이리포트")
+		meta(property="og:description" content="GIS 응용 어플리케이션 공급자")
+		meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+		meta(property='og:image:alt', content='아이리포트 회사 로고')
+		meta(property="og:url" content="http://localhost:8888")
+
+		script(type="text/javascript" src="/js/vue.js")
+		script(type="text/javascript" src="/js/components.js")
+		script(type="text/javascript" src="/js/onscroll.js")
+		script(type="text/javascript" src="/js/axios.js")
+		script(type="text/javascript" src="/js/http.js")
+
+		link(rel="stylesheet" href='/css/main.css')
+
+		//link(rel='canonical' href='')
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+		link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+		link(rel='icon', href='/favicon32.svg' type="image/svg+xml" sizes="16x16 32x32 48x48")
+		link(rel='icon', href='/favicon.svg' type="image/svg+xml")
+
+		script(type="application/ld+json").
+			{
+				"@context":"http://schema.org",
+				"@type":"WebSite",
+				"name":"아이리포트",
+				"alternateName":"아이리포트(ireport)",
+				"url":"https://plusuniv.com"
+			}
+		script(type="application/ld+json").
+			{
+				"@context": "http://schema.org",
+				"@type": "Organization",
+				"name": "아이리포트",
+				"url": "https://plusuniv.com",
+				"sameAs": []
+			}
+		script(type="application/ld+json").
+			{
+				"@context": "https://schema.org",
+				"@type": "BreadcrumbList",
+				"itemListElement":[{
+					"@type": "ListItem",
+					"position": 1,
+					"item":
+						{
+							"@id": "https://plusuniv.com",
+							"name": "홈"
+						}
+					}]
+			}
+
+	body
+		#app(:class="themeClass")
+			tnb(type="솔루션", :_this="this")
+			main
+				.content-list
+					button(:class="{ 'is-selected': tabIndex == 0 }" @click="tab(0)") Eco-Report
+					.div
+					button(:class="{ 'is-selected': tabIndex == 1 }" @click="tab(1)") Stat-Report
+				section.tab0(v-if="tabIndex == 0")
+					article.title1
+						.image-title.is-solution
+							img.title1(src="/img/eco-report-bg.png" alt="비즈니스 설명 타이틀 장식 배경")
+							.tag-list
+								.tag.is-active 도시생태현황지도 특화
+								.tag GIS 솔루션
+							h1 Eco-Report
+							p
+								span Eco-Report는 환경부 고시 도시생태현황지도 제작에 따른
+								br
+								span 성과 열람 및 도시군 관리 계획 및 환경계획 수립의 기초자료 제공을 위한
+								br
+								span 통합 서비스 환경을 제공 합니다.
+					article.title2.is-solution
+						h2
+							span 도시생태현황지도 구축을
+							br
+							span 더 빠르고 효율적으로
+						p
+							span 환경부 도시생태현황지도 DB 기반의
+							b 검증된 솔루션
+							span , 신속한 도입과 운영으로
+							b 시간과 비용 절감
+					article.solution-banner
+						.image
+							img(loading="lazy" :src="banner.current.img" alt="솔루션 배너 배경 이미지")
+						.text-wrap
+							span {{banner.current.span}}
+							h2 {{banner.current.h2}}
+							.text-box(v-html="banner.current.p")
+						.buttons
+							button(@click="onHover(0)")
+								span 맞춤형
+								.top-right-arrow-icon
+							button(@click="onHover(1)")
+								span 빠른구축
+								.top-right-arrow-icon
+					article.solution-main-feature
+						h2 서비스 주요 기능
+						.big-slides-wrapper
+							.big-slides
+								button.big-slide-prev-button-icon(v-if="bigSlideIndex['서비스 주요 기능'] > 0" @click="bigSlide($event, '이전', '서비스 주요 기능')")
+								button.big-slide-next-button-icon(v-if="bigSlideIndex['서비스 주요 기능'] < 1" @click="bigSlide($event, '다음', '서비스 주요 기능')")
+								.content
+									.slide(:class="setClassName(index, bigSlideIndex['서비스 주요 기능'], bigSlides['서비스 주요 기능'].length)" v-for="(slide, index) in bigSlides['서비스 주요 기능']")
+										.img-front
+										img(loading="lazy" :src="slide.src", :alt="slide.alt")
+							.card
+								h3 {{ bigSlides['서비스 주요 기능'][bigSlideIndex['서비스 주요 기능']].h }}
+								ul
+									li.gray(v-for="text in bigSlides['서비스 주요 기능'][bigSlideIndex['서비스 주요 기능']].li") {{ text }}
+					article.maps
+						h2 맞춤형 주제도
+						.card-list
+							.card
+								h3 위치 검색
+								p 지번과 도로명으로 검색
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 도시생태 현황도
+								ul
+									li 토지이용현황도
+									li 토지피복현황도
+									li 현존식생도
+									li 불투수 현황도
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 비오톱 주제도
+								ul
+									li 비오톱유형도
+									li 비오톱평가도
+									li 대표비오톱현황도
+									li 우수비오톱현황도
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 자연생태현황 주제도
+								ul
+									li 생물 개체분포 현황
+									li 생물 종분포 현황
+									li 철새류 도래지
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 기후관련 주제도
+								ul
+									li 바람환경 주제도
+									li 기후톱 주제도
+									li 열환경 주제도
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 위치 검색
+								p 지번과 도로명으로 검색
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 비오톱 통계정보
+								ul
+									li 행정구역별 비오톱 정보
+									li 비오톱 등급별 이용 정보
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+							.card
+								h3 내 주변 생태현황
+								p 육상 · 하천 생태 반경 검색
+								img(loading="lazy" src="/img/icons/maps-icon-1.svg")
+						.img
+				section.tab1(v-if="tabIndex == 1")
+					article.title1
+						.image-title.is-solution
+							img.title1(src="/img/stat-report-bg.jpg" alt="비즈니스 설명 타이틀 장식 배경")
+							.tag-list
+								.tag.is-active 대용량 공간정보 데이터
+								.tag 처리·출력 솔루션
+							h1 Stat-Report
+							p
+								span Stat-Report는 아이리포트만의 특화된 대용량 공간 데이터 처리 기술로
+								br
+								span 최적의 통계 조사용 지도 데이터 구축을 지원합니다.
+					article.title2.is-solution
+						h2
+							span 대용량 공간 데이터 처리부터
+							br
+							span 최적화된 지도 출력까지
+						p
+							span 방대한 공간 데이터를 빠르고 정확하게 가공하여,
+							span {{' '}}
+							b 최적의 통계조사용 지도를 제공
+					article.solution-banner
+						.image
+							img(loading="lazy" :src="banner.current.img" alt="솔루션 배너 배경 이미지")
+						.text-wrap
+							span {{banner.current.span}}
+							h2 {{banner.current.h2}}
+							.text-box(v-html="banner.current.p")
+						.buttons
+							button(@click="onHover(2)")
+								span 지도구축
+								.top-right-arrow-icon
+							button(@click="onHover(3)")
+								span 맞춤형
+								.top-right-arrow-icon
+							button(@click="onHover(4)")
+								span 자동화
+								.top-right-arrow-icon
+					article.solution-main-feature
+						h2 서비스 주요 기능
+						.big-slides-wrapper
+							.big-slides
+								button.big-slide-prev-button-icon(v-if="bigSlideIndex['서비스 주요 기능 2'] > 0" @click="bigSlide($event, '이전', '서비스 주요 기능 2')")
+								button.big-slide-next-button-icon(v-if="bigSlideIndex['서비스 주요 기능 2'] < 2" @click="bigSlide($event, '다음', '서비스 주요 기능 2')")
+								.content
+									.slide(:class="setClassName(index, bigSlideIndex['서비스 주요 기능 2'], bigSlides['서비스 주요 기능 2'].length)" v-for="(slide, index) in bigSlides['서비스 주요 기능 2']")
+										.img-front
+										img(loading="lazy" :src="slide.src", :alt="slide.alt")
+							.card
+								h3 {{ bigSlides['서비스 주요 기능 2'][bigSlideIndex['서비스 주요 기능 2']].h }}
+								ul
+									li.gray(v-for="text in bigSlides['서비스 주요 기능 2'][bigSlideIndex['서비스 주요 기능 2']].li") {{ text }}
+						.solution-details-feature(v-if="bigSlideIndex['서비스 주요 기능 2'] == 0")
+							.solution-deatil-card
+								.image.is-1
+								.text
+									h3 공간자료 구축
+									p
+										span 다양한 공간분석 결과를 제공하고,
+										br
+										span 각종 처리·조작 도구를 이용해
+										br
+										span 방대한 공간자료를 효율적으로 구축
+							.solution-deatil-card
+								.image.is-2
+								.text
+									h3 데이터 연계 구축
+									p
+										span 포털지도 연계 및 각종 도면 자료를 검색하여 
+										br
+										span 도면과 속성정보를 유기적으로 결합하여
+										br
+										span 활용하고 다양한 정보를 쉽게 구축
+							.solution-deatil-card
+								.image.is-3
+								.text
+									h3 대용량 공간 데이터 처리
+									p
+										span 대용량 자료를 직관적으로
+										br
+										span 지도 위에 표시해주는데 최적화 되도록 구성
+							.solution-deatil-card
+								.image.is-4
+								.text
+									h3 자동 데이터 정리
+									p
+										span 가구수, 건물명, 조사구번호, 거처번호 등의 
+										br
+										span 정보를 자동으로 부여하여
+										br
+										span 효율적인 데이터 정리 및 관리
+						.solution-details-feature(v-if="bigSlideIndex['서비스 주요 기능 2'] == 1")
+							.solution-deatil-card
+								.image.is-5
+								.text
+									h3 사용자 지정 출력
+									p
+										span 다양한 형식의 출력결과를 제공하고 각종 처리도구와 조작도구를
+										br
+										span 이용해 사용자가 원하는 형태의 이미지를 효율적으로 생성
+							.solution-deatil-card
+								.image.is-6
+								.text
+									h3 자동 데이터 필터링
+									p
+										span 조사구경계 내 건물이 존재하는 경우만
+										br
+										span 자동 알고리즘을 통해 일정 스케일로 분할하여 출력
+							.solution-deatil-card
+								.image.is-7
+								.text
+									h3 사용자 중심 편의기능
+									p
+										span 맵 수정창 조사구 라벨 위치 변경, 
+										br
+										span 인접 지역 라벨 이동 등 편의 기능 제공
+						.solution-details-feature(v-if="bigSlideIndex['서비스 주요 기능 2'] == 2")
+							.solution-deatil-card
+								.image.is-8
+								.text
+									h3 데이터 검수 자동화
+									p
+										span 검수 자동화 모듈 탑재를 통해 수작업으로 
+										br
+										span 이루어졌던 자료 검수의 업무 효율성 향상
+							.solution-deatil-card
+								.image.is-9
+								.text
+									h3 다양한 검수 유형 처리
+									p
+										span 조사구내 지도 라벨, 건물 전개도,
+										br
+										span 공간적 위상 오류 등의 다양한 검수 유형 지원
+							.solution-deatil-card
+								.image.is-10
+								.text
+									h3 다량의 자료 일괄 검수
+									p
+										span 방대한 자료의 일괄 자동화 검수 진행으로 
+										br
+										span 인력 및 시간 단축
+							.solution-deatil-card
+								.image.is-11
+								.text
+									h3 신뢰성 높은 자료 제공
+									p
+										span 높은 검수 정확성을 통한 고품질 데이터 제공
+			bnb
+			common-daemon
+
+	script(type='text/javascript').
+		/*
+		function ani(selector, effect) {
+			if(effect == undefined)
+			{
+				effect = "spin-in-ccw"
+				effect = "hinge-in-from-top"
+			}
+			MotionUI.animateIn(selector, effect)
+		}*/
+		Date.prototype.yymmdd = function () {
+			let mm = `${this.getMonth() + 1}`
+			let dd = `${this.getDate()}`
+			if(this.getMonth() + 1 < 10)
+				mm = `0${this.getMonth() + 1}`
+			if(this.getDate() < 10)
+				dd = `0${this.getDate()}`
+			return `${this.getFullYear().toString().substring(2)}-${mm}-${dd}`
+		}    
+		Vue.prototype.$scrollTop = function () {
+			let element = document.querySelector('body')
+			let top = element.offsetTop
+			window.scrollTo(0, top)
+		}
+		var v = new Vue({
+			el: '#app',
+			components: {
+			},
+			data: {
+				themeClass: {desktop: true},
+				strings: {
+					'국문': {}, '영문': {}
+				},
+				banner: {
+					current: {}
+				},
+				bannerList: [{
+					span: '맞춤형 환경지도 웹 솔루션',
+					h2: 'Customized Solutions',
+					p: `<div><span>지자체에서 기 운영중인 공간정보시스템에</span><br/>
+						<span>데이터를 단순 추가하여 표출하는 방식이 아닌</span><br/>
+						<span>독립된 시스템을 제공함으로써 고객의 요구사항에</span><br/>
+						<span>환경지도시스템을 납품합니다.</span></div>`,
+					img: '/img/solution-banner-bg-0.jpg'
+				}, {
+					span: '표준 기반 효율적 구축',
+					h2: 'Efficient Build',
+					p: `<div><span>환경부 도시생태현황지도 DB설계를 바탕으로</span><br/>
+						<span>개발된 제품을 납품 및 커스터마이징 하는 형태로</span><br/>
+						<span>과업기간과 소요비용을 대폭 단축하였습니다.</span></div>`,
+					img: '/img/solution-banner-bg-1.jpg'
+				}, {
+					span: '직관적인 지도 데이터 구축',
+					h2: 'Intuitive Data',
+					p: `<div><span>대용량 자료를 직관적으로 지도 위에 표시해주는데 </span><br/>
+						<span>최적화 되어있으며, 각종 처리도구와 조작도구를 </span><br/>
+						<span>이용해 방대한 공간자료를 효율적으로</span><br/>
+						<span>구축할 수 있습니다.</span></div>`,
+					img: '/img/solution-banner-bg-2.jpg'
+				}, {
+					span: '사용자 맞춤형 이미지 생성지원',
+					h2: 'Customized Image',
+					p: `<div><span>공간 데이터 자동 분할 기능을 통하여 사용자가 원하는 유형의</span><br/>
+						<span>지도 데이터 이미지 생성을 지원 합니다.</span><br/>`,
+					img: '/img/solution-banner-bg-3.jpg'
+				}, {
+					span: '데이터 검수 자동화 체계 지원',
+					h2: 'Automation Data Inspection',
+					p: `<div><span>방대한 통계 지도 데이터 검수를 위한 일괄 검수 기능이 탑재 되어</span><br/>
+						<span>단시간에 높은 신뢰도의 자료 제공이 가능 합니다.</span></div>`,
+					img: '/img/solution-banner-bg-4.jpg'
+				}],
+				tabIndex: 0,
+				accordianIndex: 0,
+				srcMap: {
+					'/img/partners/통계청.png': '/img/partners/통계청.png',
+					'/img/partners/창원특례시.png': '/img/partners/창원특례시.png',
+					'/img/partners/국립환경과학원.png': '/img/partners/국립환경과학원.png',
+					'/img/partners/KEITI.png': '/img/partners/KEITI.png',
+					'/img/partners/EPIS.png': '/img/partners/EPIS.png',
+					'/img/partners/서울대학교.png': '/img/partners/서울대학교.png',
+					'/img/partners/고려대학교.png': '/img/partners/고려대학교.png',
+				},
+				slideIndex: {
+					'국가 정책 기초 데이터': 0,
+					'GIS 공간 DB 구축': 0,
+					'도로 기반 이동 경로': 0,
+					'재난/재해 예측 및 대응': 0,
+					'도시 생태/환경 모니터링': 0,
+					'관광/레저 커뮤니티': 0,
+					'행정 업무 전산화': 0,
+					'정보화전략(ISP) 수립': 0,
+					'기후 변화 및 재난 대응': 0,
+					'지능형 시스템 운영 서비스': 0,
+					'데이터 가공 자동화 기술': 0,
+					'텍스트 로케이션': 0,
+					'위상 규칙 오류 검출': 0,
+					'광학 문자인식, OCR': 0,
+					'복잡한 데이터를 직관적으로': 0,
+					'고객 맞춤형 AI': 0,
+				},
+				slideWidth: {
+					'국가 정책 기초 데이터': 705,
+					'GIS 공간 DB 구축': 705,
+					'도로 기반 이동 경로': 705,
+					'재난/재해 예측 및 대응': 705,
+					'도시 생태/환경 모니터링': 705,
+					'관광/레저 커뮤니티': 705,
+					'행정 업무 전산화': 705,
+					'정보화전략(ISP) 수립': 705,
+					'기후 변화 및 재난 대응': 705,
+					'지능형 시스템 운영 서비스': 705,
+					'데이터 가공 자동화 기술': 705,
+					'텍스트 로케이션': 705,
+					'위상 규칙 오류 검출': 705,
+					'광학 문자인식, OCR': 705,
+					'복잡한 데이터를 직관적으로': 705,
+					'고객 맞춤형 AI': 705,
+				},
+				bigSlideIndex: {
+					'서비스 주요 기능': 0,
+					'서비스 주요 기능 2': 0
+				},
+				bigSlides: {
+					'서비스 주요 기능': [
+						{ h: '비오톱 통합정보 조회', src: '/img/slides/solution-1-1.png', li: ['특정 지점 선택 시 해당 위치에 대한 비오톱 통합조회 결과 표출'] },
+						{ h: '주제도 조회', src: '/img/slides/solution-1-2.png', li: [
+							'카테고리별 분류를 통한 주제도 화면 표출',
+							'T우수비오톱 및 대표비오톱 지역 폴리곤 데이터 표출',
+							'생물 종분포, 기후관련 주제도 구축 및 조회',
+							'지도 상 주제도 상세정보 표출'
+						] }
+					],
+					'서비스 주요 기능 2': [
+						{ h: 'Stat-IN', src: '/img/slides/solution-2-1.png', li: ['전국 규모의 대용량 데이터의 처리를 지원'] },
+						{ h: 'Stat-OUT', src: '/img/slides/solution-2-2.png', li: ['전국 규모의 대용량 데이터를 출력'] },
+						{ h: 'Stat-Inspect', src: '/img/slides/solution-2-3.jpg', li: ['통계 지도 데이터 자동화 검수 처리 지원'] },
+					]
+				},
+				slides: {
+					'국가 정책 기초 데이터': [
+						{ src: '/img/slides/business1-1-1.png', alt: '' },
+						{ src: '/img/slides/business1-1-1.png', alt: '' }
+					],
+					'GIS 공간 DB 구축': [
+						{ src: '/img/slides/business1-2-1.png', alt: '' },
+						{ src: '/img/slides/business1-2-1.png', alt: '' }
+					],
+					'도로 기반 이동 경로': [
+						{ src: '/img/slides/business1-3-1.png', alt: '' },
+						{ src: '/img/slides/business1-3-1.png', alt: '' }
+					],
+					'재난/재해 예측 및 대응': [
+						{ src: '/img/slides/business2-1-1.png', alt: '' },
+						{ src: '/img/slides/business2-1-1.png', alt: '' }
+					],
+					'도시 생태/환경 모니터링': [
+						{ src: '/img/slides/business2-2-1.png', alt: '' },
+						{ src: '/img/slides/business2-2-1.png', alt: '' }
+					],
+					'관광/레저 커뮤니티': [
+						{ src: '/img/slides/business2-3-1.png', alt: '' },
+						{ src: '/img/slides/business2-3-1.png', alt: '' }
+					],
+					'행정 업무 전산화': [
+						{ src: '/img/slides/business2-4-1.png', alt: '' },
+						{ src: '/img/slides/business2-4-1.png', alt: '' }
+					],
+					'정보화전략(ISP) 수립': [
+						{ src: '/img/slides/business2-5-1.png', alt: '' },
+						{ src: '/img/slides/business2-5-1.png', alt: '' }
+					],
+					'기후 변화 및 재난 대응': [
+						{ src: '/img/slides/business3-1-1.png', alt: '' },
+						{ src: '/img/slides/business3-1-1.png', alt: '' }
+					],
+					'지능형 시스템 운영 서비스': [
+						{ src: '/img/slides/business3-2-1.png', alt: '' },
+						{ src: '/img/slides/business3-2-1.png', alt: '' }
+					],
+					'데이터 가공 자동화 기술': [
+						{ src: '/img/slides/business3-3-1.png', alt: '' },
+						{ src: '/img/slides/business3-3-1.png', alt: '' }
+					],
+					'텍스트 로케이션': [
+						{ src: '/img/slides/business4-1-1.png', alt: '' },
+						{ src: '/img/slides/business4-1-1.png', alt: '' }
+					],
+					'위상 규칙 오류 검출': [
+						{ src: '/img/slides/business4-2-1.png', alt: '' },
+						{ src: '/img/slides/business4-2-1.png', alt: '' }
+					],
+					'광학 문자인식, OCR': [
+						{ src: '/img/slides/business4-3-1.png', alt: '' },
+						{ src: '/img/slides/business4-3-1.png', alt: '' }
+					],
+					'복잡한 데이터를 직관적으로': [
+						{ src: '/img/slides/business4-4-1.png', alt: '' },
+						{ src: '/img/slides/business4-4-1.png', alt: '' }
+					],
+					'고객 맞춤형 AI': [
+						{ src: '/img/slides/business4-5-1.png', alt: '' },
+						{ src: '/img/slides/business4-5-1.png', alt: '' }
+					],
+					'서비스 주요 기능': [
+						{ src: '', h3: '비오톱 통합정보 조회', li: ['특정 지점 선택 시 해당 위치에 대한 비오톱 통합조회 결과 표출'] },
+						{ src: '', h3: '주제도 조회', li: ['카테고리별 분류를 통한 주제도 화면 표출', 'T우수비오톱 및 대표비오톱 지역 폴리곤 데이터 표출', '생물 종분포, 기후관련 주제도 구축 및 조회', '지도 상 주제도 상세정보 표출'] },
+					]
+				}
+				
+			},
+			methods: {
+				onHover: function (index) {
+					this.banner.current = this.bannerList[index]
+				},
+				getSrc: function (src) {
+					return this.srcMap[src]
+				},
+				setSrc: function (src, newSrc) {
+					this.srcMap[src] = newSrc
+				},
+				slide: function (e, cmd, label) {
+					if(cmd == '이전')
+					{
+						if(this.slideIndex[label] - 1 < 0) return
+						this.slideIndex[label] = (this.slideIndex[label] - 1) % this.slides[label].length
+						e.target.nextSibling.nextSibling.style.transform = `translateX(-${this.slideIndex[label] * this.slideWidth[label]}px)`
+					}
+					else if(cmd == '다음')
+					{
+						if(this.slideIndex[label] + 1 >= this.slides[label].length) return
+						this.slideIndex[label] = (this.slideIndex[label] + 1) % this.slides[label].length
+						e.target.nextSibling.style.transform = `translateX(-${this.slideIndex[label] * this.slideWidth[label]}px)`
+					}
+				},
+				bigSlide: function (e, cmd, label) {
+					let slideWidth = window.innerWidth
+					if(cmd == '이전')
+					{
+						if(this.bigSlideIndex[label] - 1 < 0) return
+						this.bigSlideIndex[label] = (this.bigSlideIndex[label] - 1) % this.bigSlides[label].length
+						//e.target.nextSibling.nextSibling.style.transform = `translateX(-${this.bigSlideIndex[label] * slideWidth}px)`
+					}
+					else if(cmd == '다음')
+					{
+						if(this.bigSlideIndex[label] + 1 >= this.bigSlides[label].length) return
+						this.bigSlideIndex[label] = (this.bigSlideIndex[label] + 1) % this.bigSlides[label].length
+						//e.target.nextSibling.style.transform = `translateX(-${this.bigSlideIndex[label] * slideWidth}px)`
+					}
+				},
+				setClassName: function (index, bigSlideIndex, maxLength) {
+					if(maxLength == 2)
+					{
+						if(bigSlideIndex == 0)
+						{
+							if(index == 0)
+								return { second: true }
+							if(index == 1)
+								return { third: true }
+						}
+						if(bigSlideIndex == 1)
+						{
+							if(index == 1)
+								return { second: true }
+							if(index == 0)
+								return { third: true }
+						}
+					}
+					if(bigSlideIndex == 0)
+					{
+						if(index == 2)
+							return { first: true }
+						if(index == 0)
+							return { second: true }
+						if(index == 1)
+							return { third: true }
+					}
+					if(bigSlideIndex == 1)
+					{
+						if(index == 1)
+							return { first: true }
+						if(index == 2)
+							return { second: true }
+						if(index == 0)
+							return { third: true }
+					}
+					if(bigSlideIndex == 2)
+					{
+						if(index == 0)
+							return { first: true }
+						if(index == 1)
+							return { second: true }
+						if(index == 2)
+							return { third: true }
+					}
+
+				},
+				inflate: function (currentElement) {
+					this.currentElement = currentElement
+					this.$scrollTop()
+				},
+				changeLang: function (lang) {
+					this.lang = lang
+				},
+				tab: function(index) {
+					this.tabIndex = index
+					this.$nextTick(() => {
+						setTimeout(() => {
+						document.querySelector(`section.tab${index}`).classList.add('animation')
+						}, 0)
+						setTimeout(() => {
+						document.querySelector(`section.tab${index}`).classList.remove('animation')
+						}, 1000)
+
+					})
+
+				}
+			},
+			computed: {
+			},
+			created()
+			{
+			},
+			mounted()
+			{
+				this.banner.current = this.bannerList[0]
+				http({uri:"글읽기", method:"patch", param: { tanancy: '비전솔루션매니스탈링스', pageName: '메인' }, cb: (res) => {
+					if(res.code === 0)
+					{
+						delete res.code
+						this.strings = res
+					}
+				}})
+
+			},
+			beforeDestroy()
+			{
+			}
+
+		})

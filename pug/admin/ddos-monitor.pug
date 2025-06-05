@@ -1,0 +1,113 @@
+html(style='width: 100%;')
+  head
+    title
+    meta(name='description' content='')
+    meta(name='keywords' content='매니스탈링스')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="MST")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company")
+    meta(property="og:description" content="AI Vision Solution")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='Many Stallings Company Logo')
+    meta(property="og:url" content="http://plusuniv.com")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/grunt-build.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+    //link(href='https://vjs.zencdn.net/7.19.2/video-js.css', rel='stylesheet')
+
+    link(rel='canonical' href='http://plusuniv.com')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    //link(rel="icon" href="https://plusuniv.com/favicon.ico" type="image/x-icon")
+    //link(rel='icon', href='https://plusuniv.com/favicon.svg' type="image/svg+xml")
+  body
+    #app
+      main
+        tnb-admin
+        lnb(menu-name="어드민/디도스모니터링")
+        .main-inner
+          section
+            h1 초기 디도스 모니터링 (DDos Internet Security Monitor)
+            p 아이피 무관 1분 이내 조회수 증가량이 1000회를 넘어갈 경우 기록되며 사이트 접속이 최대 1시간 동안 401 응답코드로 차단됩니다.
+            article(v-if="raw.length > 0")
+              table.table
+                thead
+                  tr
+                    th 시작시각
+                    th 종료시각
+                    th IP
+                    th 조회수
+                    th 차단여부
+                tbody
+                  tr(v-for="row in raw")
+                    td {{row['시작시각']}}
+                    td {{row['종료시각']}}
+                    td 
+                      span {{row['IP']}}
+                    td {{row['조회수']}}
+                    td {{row['차단여부']}}
+              p 보통 2주간 총 5회 이하로 발생하고 더 이상의 기록이 없는 경우 비정상 접속 여부를 판단하지 않고 지켜볼 수 있습니다.
+              p 공격자 아이피는 PM2 오픈소스를 통하여 수집되며 개발된 웹서버에서는 기본값으로 수집되지 않습니다. 또는 클라우드 공급자의 정책에 따라 아이피 정보가 없을 수 있습니다.
+
+            b(v-else) 디도스 모니터링에서 데이터가 감지되지 않았습니다.
+    include common/tnb-admin.pug
+    include common/lnb.pug
+
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        raw: [],
+        select: {},
+        urlMap: {
+          '/': '메인 페이지',
+          '/research': '연구',
+          '/HR': '(HR) 인재 채용',
+          '/HR1': 'HR 프로세스',
+          '/HRh': 'HR 해시코드 생성 페이지',
+          '/HR2': 'HR 해시코드 입력 페이지',
+          '/HR3': '채용 후',
+          '/license': '프론트엔드 License',
+          '/terms/wordnote': 'Wordnote App Terms',
+          '/terms/wordnote2': 'Wordnote App Terms',
+          '/%EC%96%B4%EB%93%9C%EB%AF%BC/%EB%A9%94%EC%9D%B8': '어드민 메인',
+          '/%EC%96%B4%EB%93%9C%EB%AF%BC/%ED%8A%B8%EB%9E%98%ED%94%BD': '어드민 페이지뷰',
+          '/%EC%96%B4%EB%93%9C%EB%AF%BC/SEO%EC%84%A4%EC%A0%95': '어드민 SEO 설정',
+          '/%EC%96%B4%EB%93%9C%EB%AF%BC/%EB%B3%B4%EC%95%88%EC%84%A4%EC%A0%95': '어드민 보안 설정'
+        },
+      },
+      methods: {
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+        http({uri:"대량페이지뷰읽기", method:"patch", param: { tableName: '대량페이지뷰', row: '', option: {rowId: '전체'} }, cb: (res) => {
+          if(res.code === 0)
+          {
+            if(!Array.isArray(res.row))
+              this.raw = []
+            else
+              this.raw = res.row
+          }
+        } })
+      },
+      beforeDestroy()
+      {
+      }
+
+    })

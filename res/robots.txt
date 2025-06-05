@@ -1,0 +1,26 @@
+User-agent: Yeti
+User-agent: Googlebot
+User-agent: Daumoa
+Disallow: /many-factory/
+Disallow: /many-table/
+Disallow: /bt
+Disallow: /circle-ui
+Disallow: /ttk/*
+Allow: /
+
+User-agent: kakaostory-og-reader/1.0;
+Allow: /
+
+User-agent: kakaotalk-scrap/1.0;
+Allow: /
+
+User-agent: facebookexternalhit/1.1;
+Allow: /
+
+User-agent: facebookexternalhit/1.1;kakaotalk-scrap/1.0
+Allow: /
+
+User-agent: *
+Disallow: /
+
+

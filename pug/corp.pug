@@ -1,0 +1,260 @@
+html(style='width: 100%;')
+  head
+    title=title
+    meta(name='description' content=description)
+    meta(name='keywords' content='아이리포트')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="ireport")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | 아이리포트")
+    meta(property="og:description" content="GIS 응용 어플리케이션 공급자")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='아이리포트 회사 로고')
+    meta(property="og:url" content="http://localhost:8888")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/components.js")
+    script(type="text/javascript" src="/js/onscroll.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel="stylesheet" href='/css/main.css')
+
+    //link(rel='canonical' href='')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    link(rel='icon', href='/favicon32.svg' type="image/svg+xml" sizes="16x16 32x32 48x48")
+    link(rel='icon', href='/favicon.svg' type="image/svg+xml")
+
+    script(type="application/ld+json").
+      {
+        "@context":"http://schema.org",
+        "@type":"WebSite",
+        "name":"아이리포트",
+        "alternateName":"아이리포트(ireport)",
+        "url":"https://plusuniv.com"
+      }
+    script(type="application/ld+json").
+      {
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "name": "아이리포트",
+        "url": "https://plusuniv.com",
+        "sameAs": []
+      }
+    script(type="application/ld+json").
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement":[{
+          "@type": "ListItem",
+          "position": 1,
+          "item":
+            {
+              "@id": "https://plusuniv.com",
+              "name": "홈"
+            }
+          }]
+      }
+
+  body
+    #app.is-black(:class="themeClass")
+      tnb(type="메인", :_this="this")
+      main
+        section
+          article.ireport
+            h1
+              span 가장 최적화된 GIS 비즈니스 경험과
+              br
+              span AI 서비스를 제공하는 대한민국 대표 GIS 기업
+            img(loading="lazy" src="/img/ireport-bg.png" alt="아이리포트 장식 이미지")
+            h2 i Report
+          article.business
+            h2 Business
+            p 사업분야의 설명글을 적는 공간입니다. 두줄 정도 분량의 글을 작성해주세요. 사업분야의 설명글을 적는 공간입니다.
+            .business-card-list
+              .business-card
+                span.no 01
+                h3 공간정보 구축
+                p 최적의 공간정보 매니지먼트 체계를 통하여 공간정보 그 이상의 가치를 만들어 냅니다.
+                button.link-top-right-arrow-icon
+                img(loading="lazy" src="/img/icons/business1-title.png" alt="")
+              .business-card
+                span.no 02
+                h3 시스템 통합
+                p 스마트 기술과 디지털 환경 융합을 기반으로 안정적이고 차별화된 IT 서비스 환경을 제공합니다.
+                button.link-top-right-arrow-icon
+                img(loading="lazy" src="/img/icons/business2-title.png" alt="")
+              .business-card
+                span.no 03
+                h3 R&D
+                p 지속적인 기술 연구와 참여로 더 나은 내일을 준비하고 있습니다.
+                button.link-top-right-arrow-icon
+                img(loading="lazy" src="/img/icons/business3-title.png" alt="")
+              .business-card
+                span.no 04
+                h3 AI
+                p AI 기술 접목을 통한 공간정보 상의 오류 검출 및 객체 인식 기술을 제공합니다.
+                button.link-top-right-arrow-icon
+                img(loading="lazy" src="/img/icons/business4-title.png" alt="")
+          article.solution
+            h2 Solution
+            p 솔루션의 설명글을 적는 공간입니다. 두줄 정도 분량의 글을 작성해주세요. 솔루션의 설명글을 적는 공간입니다. 두줄 정도 분량의 글을 작성해주세요. 
+            .accordian(:class="{ first: accordianIndex == 0, second: accordianIndex == 1 }")
+              .accordian-item(@click="accordian(0)")
+                img(src="/img/cards/eco-report.jpg")
+              .card
+                .tag-list
+                  .tag.is-active {{accordianData[accordianIndex].tagList[0]}}
+                  .tag {{accordianData[accordianIndex].tagList[1]}}
+                h3 {{accordianData[accordianIndex].h3}}
+                p {{accordianData[accordianIndex].p}}
+                button.more
+                .foot
+                  button.more more detail
+                  .indicator-1-icon
+              .accordian-item(@click="accordian(1)")
+                img(src="/img/cards/stat-report.png")
+          article.partners
+            h2 Partners
+            p
+              span 아이리포트는 다양한 고객사와 성공적으로 프로젝트를 진행하고 있습니다.
+              br
+              span 고객사와 동반 성장을 목표로 더 나은 미래, 고객의 성공을 꾸준히 실현해 나가겠습니다.
+            .client-banner-warpper-1
+              .image-list(:style="{ transform: 'translateX(-' + translateX + 'px)' }")
+                .image(v-for="banner in bannerList1")
+                  img.client-banner(:src="banner.src")
+            .contact-box
+              h3 Contact us
+              p 국내 최고 수준의 GIS 전문가에게 문의하세요
+              button
+                span 지금 문의하기
+                .contact-us-button-icon
+              img()
+      bnb
+      common-daemon
+  script(type='text/javascript').
+    /*
+    function ani(selector, effect) {
+      if(effect == undefined)
+      {
+        effect = "spin-in-ccw"
+        effect = "hinge-in-from-top"
+      }
+      MotionUI.animateIn(selector, effect)
+    }*/
+    Date.prototype.yymmdd = function () {
+      let mm = `${this.getMonth() + 1}`
+      let dd = `${this.getDate()}`
+      if(this.getMonth() + 1 < 10)
+        mm = `0${this.getMonth() + 1}`
+      if(this.getDate() < 10)
+        dd = `0${this.getDate()}`
+      return `${this.getFullYear().toString().substring(2)}-${mm}-${dd}`
+    }
+    Vue.prototype.$scrollTop = function () {
+      let element = document.querySelector('body')
+      let top = element.offsetTop
+      window.scrollTo(0, top)
+    }
+    let isMobile = "#{mobile}" == "true"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        themeClass: {mobile: isMobile},
+        strings: {
+          '국문': {}, '영문': {}
+        },
+        accordianIndex: 0,
+        accordianData: [
+          {
+            tagList: ['도시생태현황지도 특화', 'GIS 솔루션'],
+            h3: 'Eco-Report',
+            p: 'Eco-Report는 환경부 고시 도시생태현황지도 제작에 따른 성과 열람 및 도시군 관리 계획 및 환경계획 수립의 기초자료 제공을 위한 통합 서비스 환경을 제공 합니다.'
+          },
+          {
+            tagList: ['대용량 공간정보 데이터', '처리·출력 솔루션'],
+            h3: 'Stat-Report',
+            p: 'Stat-Report는 아이리포트만의 특화된 대용량 공간 데이터 처리 기술로 최적의 통계 조사용 지도 데이터 구축을 지원합니다.'
+          }
+        ],
+        translateX: 0,
+        bannerList1: [
+          { src: '/img/partners/통계청-호버.png' },
+          { src: '/img/partners/창원특례시-호버.png' },
+          { src: '/img/partners/국립환경과학원-호버.png' },
+          { src: '/img/partners/KEITI-호버.png' },
+          { src: '/img/partners/EPIS-호버.png' },
+          { src: '/img/partners/서울대학교-호버.png' },
+          { src: '/img/partners/고려대학교-호버.png' },
+        ],
+        inv: null
+      },
+      methods: {
+        accordian: function (index) {
+          this.accordianIndex = index
+        },
+        inflate: function(currentElement) {
+          this.currentElement = currentElement
+          this.$scrollTop()
+        },
+        changeLang: function (lang) {
+          this.lang = lang
+        },
+        
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+        let spanWidth = Math.floor(window.innerWidth / 5)
+        let bannerList1NextIndex = 0, isPushed = false
+        this.inv = setInterval(() => {
+          this.translateX++
+          if(this.translateX % spanWidth == 0)
+          {
+            bannerList1NextIndex = (bannerList1NextIndex + 1) % this.bannerList1.length
+            isPushed = false
+          }
+          if(this.translateX % spanWidth > 0 && isPushed == false)
+          {
+            isPushed = true
+            this.bannerList1.push(this.bannerList1[bannerList1NextIndex])
+          }
+          if(this.translateX > 2222)
+          {
+            this.translateX = 0
+            this.bannerList1 = [
+              { src: '/img/partners/통계청-호버.png' },
+              { src: '/img/partners/창원특례시-호버.png' },
+              { src: '/img/partners/국립환경과학원-호버.png' },
+              { src: '/img/partners/KEITI-호버.png' },
+              { src: '/img/partners/EPIS-호버.png' },
+              { src: '/img/partners/서울대학교-호버.png' },
+              { src: '/img/partners/고려대학교-호버.png' },
+            ]
+          }
+        }, 20)
+        /*
+        http({uri:"글읽기", method:"patch", param: { tanancy: '비전솔루션매니스탈링스', pageName: '메인' }, cb: (res) => {
+          if(res.code === 0)
+          {
+            delete res.code
+            this.strings = res
+          }
+        }})*/
+
+      },
+      beforeDestroy()
+      {
+        if(!!this.inv)
+          clearInterval(this.inv)
+      }
+
+    })    

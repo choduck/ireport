@@ -1,0 +1,144 @@
+html(style='width: 100%;')
+  head
+    title
+    meta(name='description' content='')
+    meta(name='keywords' content='매니스탈링스')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="MST")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company")
+    meta(property="og:description" content="AI Vision Solution")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='Many Stallings Company Logo')
+    meta(property="og:url" content="http://plusuniv.com")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/buefy.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy-0929.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+    //link(href='https://vjs.zencdn.net/7.19.2/video-js.css', rel='stylesheet')
+
+    link(rel='canonical' href='http://plusuniv.com')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    //link(rel="icon" href="https://plusuniv.com/favicon.ico" type="image/x-icon")
+    //link(rel='icon', href='https://plusuniv.com/favicon.svg' type="image/svg+xml")
+  body
+    #app
+      header
+        tnb-admin(text="어드민/게시판 글쓰기")
+      aside
+        headers(menu-name="게시판 설정")
+      main.is-vertical
+        .data-control
+          button.is-left(@click="goBack") 이전 페이지
+          button.is-right(@click="write") 등록
+        .notice
+          .h-stack
+            .label 카테고리
+            b-input.flex-1(type="text" v-model="category" disabled)
+          .h-stack
+            .label 국문제목
+            b-input.flex-1(type="text" v-model="title" placeholder="국문제목")
+          .h-stack(v-for="(row, index) in Row")
+            button.del-icon(@click="removeSection(row.id)")
+            .label(v-if="row.type == 'image'") 이미지
+            .label(v-else) 국문내용
+            b-input.flex-1(v-if="row.type == 'text'" type="textarea" v-model="row.content" placeholder="국문내용")
+            section(v-if="row.type == 'image'")
+              article.fields
+                b-field
+                  b-upload(v-model="row.content" expanded @input="onImageInput($event, index)")
+                    a(v-if="!row.content") 이미지 파일 선택
+                    a(v-else) 이미지 파일 변경
+                b-field(v-if="row.type == 'image'")
+                  b-upload(drag-drop @input="onImageInput($event, index)")
+                    section.section
+                      .content.has-text-centered
+                        p(v-if="!row.content") 이미지 파일을 드래그 하여 선택
+                        p(v-else) 이미지 파일을 드래그 하여 변경
+              article.image
+                img(v-if="row.content" :src="row.content")
+
+          .h-stack
+            .plus-icon
+            button.text-icon(@click="addSection('text')")
+            button.image-icon(@click="addSection('image')")
+    include common/tnb-admin.pug
+    include common/lnb.pug
+ 
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+    let api_key = "#{api_key}"
+    let category = "#{category}"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        category: category,
+        title: '',
+        Row: [{id: 0, type: 'text', content: ''}]
+      },
+      methods: {
+        addSection: function (type) {
+          let lastId = this.Row.reverse()[0].id
+          this.Row.reverse()
+          this.Row.push({id: lastId + 1, type: type, content: ''})
+        },
+        removeSection: function (id) {
+          if(this.Row.length <= 1) return
+          this.Row = this.Row.filter(row => row.id != id)
+          let newId = 0
+          this.Row = this.Row.map(row => {
+            row.id = newId++
+            return row
+          })
+        },
+        onImageInput: async function (f, index) {
+          if(this.Row.length <= index) return
+          let blob = new Blob([await f.arrayBuffer()])
+          blob.type = ""
+          const reader = new FileReader()
+          reader.onload = () => {
+            let base64data = reader.result
+            if(base64data.startsWith('data:application/octet-stream;base64,'))
+              base64data = base64data.replace('data:application/octet-stream;base64,', `data:${f.type};base64,`)
+            this.Row[index].content = base64data
+            this.Row[index].fileext = f.type.replace('image/', '.')
+            this.$forceUpdate()
+          }
+          reader.readAsDataURL(blob)          
+        },
+        write: function () {
+          http({uri:"이미지게시판쓰기", method:"post", param: this.Row, cb: (res) => {
+            if(res.code === 0)
+            {
+              alert("수정되었습니다.")
+            }
+            else
+              alert("수정에 실패하였습니다.")
+          } })
+
+        },
+        goBack: function () {
+          history.go(-1)
+        }
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+      },
+      beforeDestroy()
+      {
+      }
+
+    })

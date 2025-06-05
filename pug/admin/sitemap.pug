@@ -1,0 +1,71 @@
+html(style='width: 100%;')
+  head
+    title
+    meta(name='description' content='')
+    meta(name='keywords' content='매니스탈링스')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="MST")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company")
+    meta(property="og:description" content="AI Vision Solution")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='Many Stallings Company Logo')
+    meta(property="og:url" content="http://plusuniv.com")
+
+    script(type="text/javascript" src="/js/vue.js")
+
+    link(rel="stylesheet" href='/css/admin.css')
+
+    //link(href='https://vjs.zencdn.net/7.19.2/video-js.css', rel='stylesheet')
+
+    link(rel='canonical' href='http://plusuniv.com')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    //link(rel="icon" href="https://plusuniv.com/favicon.ico" type="image/x-icon")
+    //link(rel='icon', href='https://plusuniv.com/favicon.svg' type="image/svg+xml")
+  body
+    #app
+      main
+        tnb-admin
+        lnb(menu-name="어드민/사이트맵")
+        .main-inner
+          .pages-outer
+            .page.is-primary(v-for="pageGroup of pages")
+              .label {{ pageGroup.name }}
+              .page-list(v-for="page of pageGroup.list")
+                .label.is-primary {{ page.name }}
+                .page-list(v-if="page.isGroup")
+                  .label.is-secondary(v-for="pageInner of page.list") {{ pageInner.name }}
+    include common/tnb-admin.pug
+    include common/lnb.pug
+ 
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+    const pages = [
+      {name: '회사소개', list: [{name: '기업관리'}, {name: '비전 검사'}, {name: '이노베이션'}]},
+      {name: '연구', list: [{name: '산업용 비전 연구', isGroup: true, list: [{name: '버스바 부품 검사 연구용역 수행'}]}, {name: '3D 비전 연구'}]},
+      {name: '문의', list: [{name: '이메일 문의'}]},
+      {name: '채용', list: [{name: '채용 과정', isGroup: true, list: [{name: '해시코드 부여받기'}, {name: '공식 이력서 양식'}]}, {name: '채용 확정 후'}]}
+    ]
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        pages: pages
+      },
+      methods: {
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+      },
+      beforeDestroy()
+      {
+      }
+
+    })

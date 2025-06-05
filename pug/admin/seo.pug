@@ -1,0 +1,105 @@
+html(style='width: 100%;')
+  head
+    title
+    meta(name='description' content='')
+    meta(name='keywords' content='매니스탈링스')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="MST")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company")
+    meta(property="og:description" content="AI Vision Solution")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='Many Stallings Company Logo')
+    meta(property="og:url" content="http://plusuniv.com")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/grunt-build.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+    //link(href='https://vjs.zencdn.net/7.19.2/video-js.css', rel='stylesheet')
+
+    link(rel='canonical' href='http://plusuniv.com')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    //link(rel="icon" href="https://plusuniv.com/favicon.ico" type="image/x-icon")
+    //link(rel='icon', href='https://plusuniv.com/favicon.svg' type="image/svg+xml")
+  body
+    #app
+      main
+        tnb-admin
+        lnb(menu-name="어드민/SEO설정")
+        .main-inner
+          .data-control
+            button.is-right(@click="write") 저장
+          .data-items
+            .data-item.is-vertical(v-for="seoItem of Object.values(seo)")
+              .item.wide {{ seoItem.name }}
+              .input-items
+                .input-item
+                  .label URL
+                  b-input(type="text" disabled :value="seoItem.url")
+                .input-item
+                  .label 타이틀 (title)
+                  b-input(type="text" v-model="seoItem.title")
+                .input-item
+                  .label 설명 (description)
+                  b-input(type="text" v-model="seoItem.description" placeholder="빈칸으로 두면 자동완성된 설명이 검색엔진에 나타납니다.")
+    include common/tnb-admin.pug
+    include common/lnb.pug
+ 
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+    let api_key = "#{api_key}"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        seo: {}
+      },
+      methods: {
+        write: function () {
+          http({uri:"SEO쓰기", method:"post", param: { api_key, tableName: 'TB_SEO', row: this.seo }, cb: (res) => {
+            if(res.code === 0)
+            {
+              alert("수정되었습니다.")
+            }
+            else 
+              alert("수정에 실패하였습니다.")
+          } })
+
+        }
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+        http({uri:"SEO읽기", method:"patch", param: { api_key, tableName: 'TB_SEO', row: {} }, cb: (res) => {
+          if(res.code === 0)
+          {
+            if(typeof res.row == 'object' && Object.keys(res.row).length > 0)
+              this.seo = res.row
+            else
+            {
+              this.seo = {
+                '/': { name: '메인 페이지', url: '/', title: '차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company', description: '' },
+                '/research': { name: '연구', url: '/research', title: 'AI 비전솔루션 매니스탈링스 Many Stallings Company', description: '' },
+                '/HR': { name: '채용', url: '/HR', title: '매니스탈링스와 함께 일할 수 있습니다.', description: '' },
+                '/license': { name: '오픈소스 라이선스', url: '/license', title: 'Used Open Soruce License Notice 사용 오픈소스 라이선스 통지 | 매니스탈링스', description: '프론트엔드 측에 사용된 오픈소스 상세 내역을 고지합니다.' }
+              }
+            }
+          }
+        } })
+      },
+      beforeDestroy()
+      {
+      }
+
+    })

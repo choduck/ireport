@@ -1,0 +1,102 @@
+html(style='width: 100%;')
+  head
+    title
+    meta(name='description' content='')
+    meta(name='keywords' content='매니스탈링스')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="MST")
+    meta(property="og:title" content="차가운 기술로 따뜻한 세상을 만드는 🙂🙂 | AI 비전솔루션 매니스탈링스 Many Stallings Company")
+    meta(property="og:description" content="AI Vision Solution")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='Many Stallings Company Logo')
+    meta(property="og:url" content="http://plusuniv.com")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/grunt-build.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+    //link(href='https://vjs.zencdn.net/7.19.2/video-js.css', rel='stylesheet')
+
+    link(rel='canonical' href='http://plusuniv.com')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    //link(rel="icon" href="https://plusuniv.com/favicon.ico" type="image/x-icon")
+    //link(rel='icon', href='https://plusuniv.com/favicon.svg' type="image/svg+xml")
+  body
+    #app
+      main
+        tnb-admin
+        lnb(menu-name="어드민/게시판" :item-focused="itemFocused")
+        .main-inner
+    include common/tnb-admin.pug
+    include common/lnb.pug
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+    let tableName = "#{tableName}"
+    let noticeNo = "#{noticeNo}"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        itemFocused: {
+          '회사 뉴스': false
+        },
+        cmd: '수정',
+        select: [{}]
+      },
+      methods: {
+        write: function (cmd) {
+          if(cmd == '수정')
+          {
+            this.cmd = '등록'
+            return
+          }
+          else if(cmd == '등록') {
+            if(!this.select) return
+            if(this.select.length != 1) return
+            http({uri:"게시판수정", method:"put", param: { tableName: tableName, datetime: this.select[0]['일시'], row: this.select[0] }, cb: (res) => {
+              this.cmd = '수정'
+              if(res.code === 0)
+              {
+                alert("수정되었습니다.")
+              }
+              else
+                alert("수정에 실패하였습니다.")
+            } })
+          }
+        },
+        goBack: function () {
+          history.go(-1)
+        }
+      },
+      computed: {
+      },
+      created()
+      {
+      },
+      mounted()
+      {
+        http({uri:"게시판검색", method:"patch", param: { tableName: tableName, option: {row: {NO: noticeNo}, condition: '같음'} }, cb: (res) => {
+          if(res.code === 0)
+          {
+            if(!Array.isArray(res.data))
+              this.select = []
+            else
+              this.select = res.data
+            if(this.select.length > 0)
+            {
+            }
+          }
+        } })
+      },
+      beforeDestroy()
+      {
+      }
+
+    })
