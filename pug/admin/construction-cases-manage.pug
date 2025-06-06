@@ -43,10 +43,10 @@ html(style='width: 100%;')
                   td.checkbox-col
                     input(type="checkbox" :value="item" v-model="selectedItems")
                   td.no-col {{ totalItems - ((currentPage - 1) * itemsPerPage + index) }}
-                  td.customer-col {{ item.고객사 || '-' }}
-                  td.project-col {{ item.사업명 || '-' }}
-                  td.period-col {{ item.사업기간 || '-' }}
-                  td.date-col {{ formatDate(item.작성일) || formatDate(item.일자) || '-' }}
+                  td.customer-col {{ item.고객사 || item.국문제목 || item.제목 || '-' }}
+                  td.project-col {{ item.사업명 || item.국문내용 || item.내용 || '-' }}
+                  td.period-col {{ item.사업기간 || item.영문제목 || '-' }}
+                  td.date-col {{ formatDate(item.작성일) || formatDate(item.일자) || formatDate(item.일시) || '-' }}
                   td.action-col
                     button.edit-btn(@click="editItem(item)") 수정
                     button.delete-btn(@click="deleteItem(item)") 삭제
@@ -62,28 +62,36 @@ html(style='width: 100%;')
               ) {{ page }}
               button.pagination-btn(@click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages") >
 
-      .modal(:class="{'is-active': isEditModalOpen}")
-        .modal-background(@click="closeEditModal")
-        .modal-card
-          header.modal-card-head
-            p.modal-card-title 구축사례 수정
-            button.delete(@click="closeEditModal")
-          section.modal-card-body
-            .field
-              label.label 고객사
-              .control
-                input.input(type="text" v-model="editForm.고객사" placeholder="고객사명을 입력하세요")
-            .field
-              label.label 사업명  
-              .control
-                input.input(type="text" v-model="editForm.사업명" placeholder="사업명을 입력하세요")
-            .field
-              label.label 사업기간
-              .control
-                input.input(type="text" v-model="editForm.사업기간" placeholder="예: 25.01 ~ 25.04")
-          footer.modal-card-foot
-            button.button.is-success(@click="saveEdit") 저장
-            button.button(@click="closeEditModal") 취소
+      div(v-if="isEditModalOpen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center;")
+        div(style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);" @click="closeEditModal")
+        div(style="position: relative; width: 90%; max-width: 500px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 10000;")
+          div(style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;")
+            h3(style="font-size: 18px; font-weight: 600; margin: 0;") 구축사례 수정
+            button(style="width: 24px; height: 24px; background: none; border: none; cursor: pointer; font-size: 20px;" @click="closeEditModal") ×
+          
+          div(style="padding: 20px; max-height: 70vh; overflow-y: auto;")
+            div(style="background: #fffacd; padding: 10px; margin-bottom: 20px; font-size: 14px; border: 2px solid #ffd700; border-radius: 4px;")
+              p(style="margin: 5px 0; font-weight: bold;") 🔍 디버그 정보:
+              p(style="margin: 5px 0;") 📝 고객사: "{{ editForm.고객사 }}"
+              p(style="margin: 5px 0;") 📋 사업명: "{{ editForm.사업명 }}"
+              p(style="margin: 5px 0;") 📅 사업기간: "{{ editForm.사업기간 }}"
+              p(style="margin: 5px 0;") 🔢 NO: {{ editForm.NO }}
+              
+            div(style="margin-bottom: 20px;")
+              label(style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;") 고객사 *
+              input(type="text" v-model="editForm.고객사" placeholder="고객사명을 입력하세요" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;")
+              
+            div(style="margin-bottom: 20px;")
+              label(style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;") 사업명 *
+              input(type="text" v-model="editForm.사업명" placeholder="사업명을 입력하세요" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;")
+              
+            div(style="margin-bottom: 20px;")
+              label(style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;") 사업기간 *
+              input(type="text" v-model="editForm.사업기간" placeholder="예: 25.01 ~ 25.04" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;")
+          
+          div(style="padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end;")
+            button(style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;" @click="saveEdit") 저장
+            button(style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;" @click="closeEditModal") 취소
 
     include common/tnb-admin.pug
     include common/lnb.pug
@@ -136,6 +144,22 @@ html(style='width: 100%;')
             return this.paginatedCases.length > 0 && this.selectedItems.length === this.paginatedCases.length
           }
         },
+        watch: {
+          editForm: {
+            deep: true,
+            handler(newVal) {
+              console.log('editForm 변경 감지:', newVal)
+            }
+          },
+          isEditModalOpen(newVal) {
+            console.log('모달 상태 변경:', newVal)
+            if (newVal) {
+              this.$nextTick(() => {
+                console.log('모달이 열린 후 editForm:', this.editForm)
+              })
+            }
+          }
+        },
         methods: {
           loadConstructionCases() {
             http({
@@ -148,29 +172,44 @@ html(style='width: 100%;')
                 option: { rowId: '목록전체' } 
               }, 
               cb: (res) => {
-                console.log('API 응답:', res)
+                console.log('=== 구축사례 데이터 로드 ===')
+                console.log('전체 API 응답:', res)
                 if (res.code === 0) {
                   if (Array.isArray(res.data)) {
-                    this.constructionCases = res.data.filter(item => 
+                    // 모든 데이터 확인
+                    console.log('전체 데이터 개수:', res.data.length)
+                    
+                    // 구축사례 필터링
+                    const constructionData = res.data.filter(item => 
                       item && item['카테고리'] === '구축사례'
-                    ).sort((a, b) => {
+                    )
+                    
+                    console.log('구축사례 개수:', constructionData.length)
+                    
+                    if (constructionData.length > 0) {
+                      console.log('첫 번째 구축사례 상세:')
+                      const firstItem = constructionData[0]
+                      Object.keys(firstItem).forEach(key => {
+                        console.log(`  ${key}:`, firstItem[key])
+                      })
+                    }
+                    
+                    this.constructionCases = constructionData.sort((a, b) => {
                       const dateA = new Date(a.일시 || a.작성일 || a.일자)
                       const dateB = new Date(b.일시 || b.작성일 || b.일자)
                       return dateB - dateA
                     })
-                    
-                    if (this.constructionCases.length > 0) {
-                      console.log('첫 번째 구축사례 항목 구조:', this.constructionCases[0])
-                      console.log('사용 가능한 키들:', Object.keys(this.constructionCases[0]))
-                    }
                   } else {
                     this.constructionCases = []
                   }
                   this.selectedItems = []
-                  console.log('필터링된 구축사례:', this.constructionCases)
                 } else {
                   alert("데이터 조회에 실패했습니다.")
                 }
+              },
+              ecb: (error) => {
+                console.error('데이터 로드 에러:', error)
+                alert("데이터 조회 중 오류가 발생했습니다.")
               }
             })
           },
@@ -188,15 +227,28 @@ html(style='width: 100%;')
             }
           },
           editItem(item) {
+            console.log('=== 수정 버튼 클릭 ===')
             console.log('수정할 항목:', item)
+            
+            // 데이터 준비
+            const itemNO = item.NO || item.id
+            const customerValue = item.고객사 || item.국문제목 || item.제목 || ''
+            const projectValue = item.사업명 || item.국문내용 || item.내용 || ''
+            const periodValue = item.사업기간 || item.영문제목 || ''
+            
+            // 원본 데이터 저장
             this.originalEditItem = item
-            this.editForm = {
-              id: item.id,
-              NO: item.NO,
-              고객사: item.고객사 || '',
-              사업명: item.사업명 || '',
-              사업기간: item.사업기간 || ''
-            }
+            
+            // Vue.set을 사용하여 반응성 보장
+            this.$set(this.editForm, 'id', item.id)
+            this.$set(this.editForm, 'NO', itemNO)
+            this.$set(this.editForm, '고객사', customerValue)
+            this.$set(this.editForm, '사업명', projectValue)
+            this.$set(this.editForm, '사업기간', periodValue)
+            
+            console.log('설정된 editForm:', this.editForm)
+            
+            // 모달 열기
             this.isEditModalOpen = true
           },
           saveEdit() {
@@ -205,19 +257,21 @@ html(style='width: 100%;')
               return
             }
             
+            // NO를 숫자로 변환
+            const rowId = Number(this.editForm.NO)
+            
             const updatedRow = {
-              NO: this.editForm.NO,
-              고객사: this.editForm.고객사,
-              사업명: this.editForm.사업명,
-              사업기간: this.editForm.사업기간,
-              카테고리: '구축사례'
+              고객사: this.editForm.고객사.trim(),
+              사업명: this.editForm.사업명.trim(),
+              사업기간: this.editForm.사업기간.trim()
             }
             
-            console.log('수정 요청:', {
+            console.log('수정 요청 데이터:', {
               tableName: 'TB_NOTICE1',
               row: updatedRow,
-              option: { rowId: this.editForm.NO }
+              option: { rowId: rowId }
             })
+            console.log('rowId 타입:', typeof rowId, 'rowId 값:', rowId)
             
             http({
               uri: "게시판수정", 
@@ -226,45 +280,51 @@ html(style='width: 100%;')
                 api_key, 
                 tableName: 'TB_NOTICE1', 
                 row: updatedRow,
-                option: { rowId: this.editForm.NO }
+                option: { rowId: rowId }
               }, 
               cb: (res) => {
                 console.log('수정 응답:', res)
                 if (res.code === 0) {
-                  alert("수정되었습니다.")
+                  alert("구축사례가 성공적으로 수정되었습니다.")
                   this.closeEditModal()
                   this.loadConstructionCases()
                 } else {
                   alert("수정에 실패했습니다: " + (res.msg || res.message || '알 수 없는 오류'))
+                  console.error('수정 실패 응답:', res)
                 }
               },
               ecb: (error) => {
-                console.error('수정 오류:', error)
-                alert("수정 중 오류가 발생했습니다.")
+                console.error('수정 API 호출 오류:', error)
+                alert("수정 중 오류가 발생했습니다. 다시 시도해주세요.")
               }
             })
           },
           closeEditModal() {
+            console.log('모달 닫기')
             this.isEditModalOpen = false
-            this.editForm = {
+            // editForm을 완전히 초기화
+            this.$set(this, 'editForm', {
               id: null,
               NO: null,
               고객사: '',
               사업명: '',
               사업기간: ''
-            }
+            })
             this.originalEditItem = null
           },
           deleteItem(item) {
             console.log('삭제할 항목:', item)
-            console.log('삭제할 NO:', item.NO)
-            console.log('api_key:', api_key)
+            console.log('삭제할 NO:', item.NO, 'id:', item.id)
+            
+            // NO가 없으면 id를 사용
+            const itemNO = item.NO || item.id
+            console.log('사용할 rowId:', itemNO)
             
             if (confirm(`"${item.고객사} - ${item.사업명}" 구축사례를 삭제하시겠습니까?`)) {
               const deleteParam = { 
                 api_key,
                 tableName: 'TB_NOTICE1', 
-                option: { rowId: item.NO }
+                option: { rowId: itemNO }
               }
               console.log('삭제 요청 파라미터:', deleteParam)
               
@@ -299,19 +359,23 @@ html(style='width: 100%;')
               let errorCount = 0
               
               this.selectedItems.forEach((item, index) => {
+                // NO가 없으면 id를 사용
+                const itemNO = item.NO || item.id
+                
                 http({
                   uri: "게시판삭제", 
                   method: "delete", 
                   param: { 
                     api_key,
                     tableName: 'TB_NOTICE1', 
-                    option: { rowId: item.NO }
+                    option: { rowId: itemNO }
                   }, 
                   cb: (res) => {
                     if (res.code === 0) {
                       deletedCount++
                     } else {
                       errorCount++
+                      console.error('삭제 실패:', res)
                     }
                     
                     // 마지막 항목 처리 완료 시
@@ -463,7 +527,14 @@ html(style='width: 100%;')
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 1000;
+        z-index: 9999;
+        display: none;
+      }
+      
+      .modal.is-active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       .modal-background {
@@ -479,10 +550,11 @@ html(style='width: 100%;')
         position: relative;
         width: 90%;
         max-width: 500px;
-        margin: 50px auto;
+        margin: 0 auto;
         background: white;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
       }
       
       .modal-card-head {
@@ -501,6 +573,8 @@ html(style='width: 100%;')
       
       .modal-card-body {
         padding: 20px;
+        max-height: 70vh;
+        overflow-y: auto;
       }
       
       .modal-card-foot {

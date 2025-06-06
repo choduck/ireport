@@ -975,65 +975,95 @@ app.post('/api/v2/table', hasJWT, async (req, res, next) => {
  * 테이블 로우 수정
  */
 app.patch('/api/v2/table/update', hasJWT, async (req, res, next) => {
+	console.log('[UPDATE API] 수정 요청 받음:', req.body)
+	
 	if(!req.body.hasOwnProperty('tableName')) return next()
 	if(!req.body.hasOwnProperty('row')) return next()
 	if(!req.body.hasOwnProperty('option')) req.body.option = {}
 	
 	// 허용된 테이블명 체크
 	if(req.body.tableName != "TB_NOTICE1") {
-		res.send({code: 1})
+		res.send({code: 1, msg: '허용되지 않은 테이블입니다.'})
 		return
 	}
 
 	try {
 		// 메타데이터 가져오기
 		const metaKey = `table-${req.body.tableName}/메타`
+		console.log('[UPDATE] 메타 키:', metaKey)
 		let meta = await findSome({tenancy: TENANCY, some: metaKey})
 		
 		if (!meta || !meta.someMap) {
+			console.log('[UPDATE] 메타데이터가 없음!')
 			res.send({code: 1, msg: '메타데이터를 찾을 수 없습니다.'})
 			return
 		}
 		
+		console.log('[UPDATE] 메타데이터:', meta)
+		console.log('[UPDATE] 수정할 rowId:', req.body.option.rowId, '타입:', typeof req.body.option.rowId)
+		
 		// 모든 시간대의 데이터를 순회하면서 수정
 		let updated = false
 		for (let someKey of Object.keys(meta.someMap)) {
+			console.log(`[UPDATE] ${someKey} 키에서 데이터 검색 중...`)
 			let data = await findSome({tenancy: TENANCY, some: someKey})
+			
 			if (Array.isArray(data)) {
+				console.log(`[UPDATE] ${someKey}에 ${data.length}개 항목 존재`)
+				
 				const targetIndex = data.findIndex(item => {
-					console.log(item.NO, req.body.option.rowId)
-					return item.NO == req.body.option.rowId
+					// NO를 숫자로 변환하여 비교
+					const itemNO = Number(item.NO)
+					const searchNO = Number(req.body.option.rowId)
+					console.log(`[UPDATE] 비교중: item.NO=${itemNO} vs rowId=${searchNO}`)
+					return itemNO === searchNO
 				})
+				
 				if (targetIndex !== -1) {
-					// 기존 id와 NO를 유지하면서 다른 필드만 업데이트
+					console.log(`[UPDATE] NO ${req.body.option.rowId} 항목을 ${someKey}에서 발견 (인덱스: ${targetIndex})`)
+					console.log(`[UPDATE] 수정 전 항목:`, data[targetIndex])
+					
+					// 기존 메타데이터 보존
 					const existingId = data[targetIndex].id
 					const existingNO = data[targetIndex].NO
 					const existingDate = data[targetIndex].일시 || data[targetIndex].일자
+					const existingTime = data[targetIndex].시간
+					const existingCategory = data[targetIndex].카테고리
 					
-					// 업데이트할 데이터 준비
+					// 업데이트할 데이터 준비 (기존 데이터와 새 데이터 병합)
 					data[targetIndex] = {
-						...data[targetIndex],
-						...req.body.row,
+						...data[targetIndex],  // 기존 데이터
+						...req.body.row,       // 새로운 데이터
+						// 메타데이터는 유지
 						id: existingId,
 						NO: existingNO,
-						일시: existingDate
+						일시: existingDate,
+						시간: existingTime,
+						일자: existingDate ? existingDate.split(' ')[0] : data[targetIndex].일자,
+						카테고리: existingCategory || '구축사례'
 					}
+					
+					console.log(`[UPDATE] 수정 후 항목:`, data[targetIndex])
 					
 					// 수정된 데이터 저장
 					await saveSome({tenancy: TENANCY, some: someKey, value: data})
 					updated = true
+					console.log('[UPDATE] 수정 성공!')
 					break
+				} else {
+					console.log(`[UPDATE] ${someKey}에서 rowId ${req.body.option.rowId} 찾지 못함`)
 				}
 			}
 		}
 		
 		if (updated) {
-			res.send({code: 0})
+			res.send({code: 0, msg: '수정되었습니다.'})
 		} else {
+			console.log('[UPDATE] 수정할 항목을 찾지 못함!')
 			res.send({code: 1, msg: '수정할 항목을 찾을 수 없습니다.'})
 		}
 	} catch(e) {
-		console.log(e)
+		console.log('[UPDATE] 오류 발생:', e)
 		res.send(getMessage('쓰기오류'))
 	}
 })
@@ -1044,14 +1074,14 @@ app.patch('/api/v2/table/update', hasJWT, async (req, res, next) => {
  * 테이블 로우 삭제
  */
 app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
-	console.log('[DELETE API] 요청 받음:', req.body)
+	console.log('[DELETE API] 삭제 요청 받음:', req.body)
 	
 	if(!req.body.hasOwnProperty('tableName')) return next()
 	if(!req.body.hasOwnProperty('option')) req.body.option = {}
 	
 	// 허용된 테이블명 체크
 	if(req.body.tableName != "TB_NOTICE1") {
-		res.send({code: 1})
+		res.send({code: 1, msg: '허용되지 않은 테이블입니다.'})
 		return
 	}
 
@@ -1074,20 +1104,27 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 		console.log('[DELETE] 메타 someMap 키들:', Object.keys(meta.someMap))
 		console.log('[DELETE] 삭제할 rowId:', req.body.option.rowId, '타입:', typeof req.body.option.rowId)
 		
+		// rowId를 숫자로 변환
+		const searchNO = Number(req.body.option.rowId)
+		console.log('[DELETE] 숫자로 변환된 rowId:', searchNO)
+		
 		for (let someKey of Object.keys(meta.someMap)) {
 			console.log(`[DELETE] ${someKey} 키에서 데이터 검색 중...`)
 			let data = await findSome({tenancy: TENANCY, some: someKey})
 			
 			if (Array.isArray(data)) {
 				console.log(`[DELETE] ${someKey}에 ${data.length}개 항목 존재`)
+				
 				const targetIndex = data.findIndex(item => {
-					console.log(`[DELETE] 비교중: item.NO=${item.NO}(${typeof item.NO}) vs rowId=${req.body.option.rowId}(${typeof req.body.option.rowId})`)
-					return item.NO == req.body.option.rowId
+					// NO와 id 모두 숫자로 변환하여 비교
+					const itemNO = Number(item.NO || item.id)
+					console.log(`[DELETE] 비교중: item.NO=${itemNO} vs searchNO=${searchNO}`)
+					return itemNO === searchNO
 				})
 				
 				if (targetIndex !== -1) {
-					console.log(`[DELETE] NO ${req.body.option.rowId} 항목을 ${someKey}에서 발견 (인덱스: ${targetIndex})`)
-					console.log(`[DELETE] 삭제 전 항목:`, data[targetIndex])
+					console.log(`[DELETE] NO ${searchNO} 항목을 ${someKey}에서 발견 (인덱스: ${targetIndex})`)
+					console.log(`[DELETE] 삭제할 항목:`, data[targetIndex])
 					
 					// 해당 항목 삭제
 					data.splice(targetIndex, 1)
@@ -1107,14 +1144,14 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 					deleted = true
 					break
 				} else {
-					console.log(`[DELETE] ${someKey}에서 rowId ${req.body.option.rowId} 찾지 못함`)
+					console.log(`[DELETE] ${someKey}에서 rowId ${searchNO} 찾지 못함`)
 				}
 			}
 		}
 		
 		if (deleted) {
 			console.log('[DELETE] 삭제 성공!')
-			res.send({code: 0})
+			res.send({code: 0, msg: '삭제되었습니다.'})
 		} else {
 			console.log('[DELETE] 삭제할 항목을 찾지 못함!')
 			res.send({code: 1, msg: '삭제할 항목을 찾을 수 없습니다.'})
