@@ -523,8 +523,7 @@ header .tnb {
   height: 100px;
   box-sizing: border-box;
   background: rgba(0, 10, 23, 0.9);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   position: fixed;
   z-index: 20;
   flex-wrap: wrap;
@@ -547,8 +546,7 @@ header .tnb .inflated-menu {
   display: flex;
   transition: opacity 0.7s ease;
   background: rgba(0, 10, 23, 0.5);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 header .tnb .inflated-menu .menu-list {
   display: flex;
@@ -624,8 +622,7 @@ header > .index-visual #carousel .carousel-item {
 }
 header > .index-visual #carousel .carousel-item video {
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 header > .index-visual #carousel .carousel-item .hero-title-1, header > .index-visual #carousel .carousel-item .hero-title-2 {
   position: absolute;
@@ -673,8 +670,7 @@ header > .main-visual.simple {
 header > .main-visual.simple img {
   width: 100%;
   height: 742px;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 header > .main-visual.simple .main, header > .main-visual.simple .business, header > .main-visual.simple .recruit, header > .main-visual.simple .solution {
   width: 100%;
@@ -921,8 +917,7 @@ article.business .business-card-list .business-card {
   background: linear-gradient(133deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition: transform ease 0.2s;
 }
 article.business .business-card-list .business-card span.no {
@@ -974,8 +969,7 @@ article.business .business-card-list .business-card:hover {
   background: linear-gradient(133deg, rgba(0, 127, 255, 0.24) 0%, rgba(0, 127, 255, 0.08) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 article.business .business-card-list .business-card:nth-child(1):hover {
   transform: translateY(-12%);
@@ -1102,12 +1096,9 @@ article.solution .accordian .accordian-item {
 }
 article.solution .accordian .accordian-item img {
   transition: object-position 1s ease;
-  transition: object-position 1s ease, -o-object-position 1s ease;
-  -o-object-position: -5px;
-     object-position: -5px;
+  object-position: -5px;
   aspect-ratio: 1/1;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 article.solution .accordian.first .accordian-item:first-child {
   flex: 0.35999;
@@ -1120,8 +1111,7 @@ article.solution .accordian.second .accordian-item:last-child {
   border-radius: 20px;
 }
 article.solution .accordian.second .accordian-item:last-child img {
-  -o-object-position: -450px;
-     object-position: -450px;
+  object-position: -450px;
 }
 
 article.partners {
@@ -1240,8 +1230,7 @@ article.vision .introduction-card-list .introduction-card {
   border-radius: 24px;
   border: 2px solid white;
   background: linear-gradient(150deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.06) 100%), rgba(0, 0, 0, 0.1);
-  -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 article.vision .introduction-card-list .introduction-card h2 {
   color: #FFF;
@@ -1274,8 +1263,7 @@ article.company-info {
 article.company-info img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 article.company-info .div-filter {
   position: absolute;
@@ -1572,8 +1560,7 @@ article.partner .partner-wrap {
 article.partner .partner-wrap img {
   width: 150px;
   height: 62px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 
 article.location {
@@ -1952,8 +1939,7 @@ article.maps .card-list .card {
   background: linear-gradient(133deg, rgba(247, 247, 251, 0.3) 0%, rgba(247, 247, 251, 0.3) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 article.maps .card-list .card h3 {
   color: #111;
@@ -2030,7 +2016,6 @@ article.solution-front .card h3 {
 article.solution-front .card .card-in-card {
   margin-top: 80px;
   box-sizing: border-box;
-  width: -moz-fit-content;
   width: fit-content;
   border-radius: 12px;
   border-width: 1px;
@@ -2040,8 +2025,7 @@ article.solution-front .card .card-in-card {
   background: linear-gradient(133deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 article.solution-front .card .card-in-card p {
   font-weight: 400;
@@ -2061,8 +2045,7 @@ article.solution-banner .image {
 article.solution-banner img {
   width: 100%;
   height: 680px;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 article.solution-banner .text-wrap {
   position: absolute;
@@ -2100,8 +2083,7 @@ article.solution-banner .text-wrap .text-box {
   background: linear-gradient(133deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%) linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.4) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(5px);
-          backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
 }
 article.solution-banner .buttons {
   position: absolute;
@@ -2278,8 +2260,7 @@ article.recruit-banner .card .image {
 article.recruit-banner .card .image img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
 }
 article.recruit-banner .card .image .img-front {
   position: absolute;
@@ -2358,8 +2339,7 @@ article.benefits .card-list .card {
   background: linear-gradient(133deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
   background-blend-mode: overlay;
   box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(20px);
-          backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
 }
 article.benefits .card-list .card h3 {
   color: #111;
@@ -2383,8 +2363,7 @@ article.benefits .card-list .card img {
   right: 50px;
   width: 88px;
   height: 100px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 
 article.recruit-process {
@@ -2618,10 +2597,6 @@ input[type=text], .input-bar {
   cursor: pointer;
 }
 
-input[type=text]::-moz-placeholder {
-  color: #B5B5B5;
-}
-
 input[type=text]::placeholder {
   color: #B5B5B5;
 }
@@ -2642,10 +2617,6 @@ textarea {
   letter-spacing: -0.45px;
   color: #000A17;
   box-sizing: border-box;
-}
-
-textarea::-moz-placeholder {
-  color: #B5B5B5;
 }
 
 textarea::placeholder {
@@ -2780,8 +2751,7 @@ textarea::placeholder {
 .small-slides .slide img {
   width: 705px;
   height: 382px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
   border-radius: 12px;
 }
 .small-slides .slide.current .img-front {
@@ -3146,7 +3116,6 @@ footer .right-side a {
     margin-right: 0;
   }
   header .tnb .inflated-menu.active > .menu-list > div {
-    height: -moz-fit-content;
     height: fit-content;
   }
   header .tnb .inflated-menu.active > .menu-list .menu-item {
@@ -3282,8 +3251,7 @@ footer .right-side a {
   }
   .image-title img {
     position: static;
-    -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
   }
   .image-title h1 {
     top: calc(45% - 45px);
@@ -3332,8 +3300,7 @@ footer .right-side a {
     color: #111;
   }
   .image-title.is-solution img {
-    -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
     width: 100%;
     height: 439.5px;
   }
@@ -3424,8 +3391,7 @@ footer .right-side a {
     margin-top: 20px;
     position: static;
     aspect-ratio: 1/1;
-    -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
   }
   main section article.ireport h2 {
     top: 50px;
@@ -3489,7 +3455,6 @@ footer .right-side a {
     grid-template-columns: 1fr 1fr;
     grid-auto-flow: dense;
     gap: 20px;
-    width: -moz-fit-content;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
@@ -3498,8 +3463,7 @@ footer .right-side a {
     position: absolute;
     top: 100px;
     aspect-ratio: 1/1;
-    -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
   }
   main section article.vision .introduction-card-list {
     position: static;
@@ -3592,8 +3556,7 @@ footer .right-side a {
     background: linear-gradient(133deg, rgba(247, 247, 251, 0.3) 0%, rgba(247, 247, 251, 0.3) 100%);
     background-blend-mode: overlay;
     box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.06);
-    -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
   main section article.maps .card-list .card h3 {
     color: #111;
@@ -3724,4 +3687,160 @@ footer .right-side a {
     grid-template-columns: 1fr 1fr;
     grid-auto-flow: dense;
   }
-}/*# sourceMappingURL=main.css.map */
+}
+.construction {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%), url(../img/information-bg-top.jpg) lightgray -0.1px -120.219px/104.496% 210.795% no-repeat;
+}
+
+.construction-header-section {
+  position: relative;
+  width: 100%;
+  height: 800px;
+  overflow: hidden;
+}
+.construction-header-section .header-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url(/img/frame.svg) no-repeat center center !important;
+  background-size: cover !important;
+  z-index: 1;
+}
+.construction-header-section .header-content {
+  position: absolute;
+  left: 200px;
+  bottom: 120px;
+  z-index: 2;
+}
+.construction-header-section .header-content .header-title {
+  color: #FFF;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -1.2px;
+  margin-bottom: 8px;
+}
+.construction-header-section .header-content .header-subtitle {
+  color: #007FFF;
+  font-size: 84px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%;
+  letter-spacing: -2.1px;
+  margin: 0;
+}
+
+.construction-cases-section {
+  padding: 80px 0;
+  background: #ffffff;
+  min-height: 600px;
+}
+.construction-cases-section .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.construction-cases-section .page-header {
+  text-align: center;
+  margin-bottom: 60px;
+  margin-top: 80px;
+}
+.construction-cases-section .page-title {
+  font-size: 2.5rem;
+  color: #0066FF;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+.construction-cases-section .page-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+.construction-cases-section .cases-table-wrapper {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.construction-cases-section .cases-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.construction-cases-section .cases-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #0066FF;
+}
+.construction-cases-section .cases-table th {
+  padding: 18px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+.construction-cases-section .cases-table th:first-child {
+  width: 80px;
+  text-align: center;
+}
+.construction-cases-section .cases-table th:nth-child(2) {
+  width: 200px;
+}
+.construction-cases-section .cases-table th:nth-child(3) {
+  width: auto;
+}
+.construction-cases-section .cases-table th:last-child {
+  width: 150px;
+  text-align: center;
+}
+.construction-cases-section .cases-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+.construction-cases-section .cases-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.construction-cases-section .cases-table td {
+  padding: 20px;
+  color: #495057;
+  font-size: 0.95rem;
+}
+.construction-cases-section .cases-table td:first-child {
+  text-align: center;
+  color: #666;
+}
+.construction-cases-section .cases-table td:last-child {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+.construction-cases-section .customer-name {
+  font-weight: 500;
+  color: #333;
+}
+.construction-cases-section .project-name {
+  color: #333;
+  line-height: 1.5;
+}
+.construction-cases-section .no-data {
+  text-align: center;
+  padding: 100px 20px;
+  color: #999;
+}
+
+@media screen and (max-width: 1024px) {
+  .construction-header-section {
+    height: 400px;
+  }
+  .construction-header-section .header-content {
+    left: 20px;
+    bottom: 60px;
+  }
+  .construction-header-section .header-content .header-title {
+    font-size: 36px;
+  }
+  .construction-header-section .header-content .header-subtitle {
+    font-size: 60px;
+  }
+}

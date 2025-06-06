@@ -1,0 +1,89 @@
+html(style='width: 100%;')
+  head
+    title=title
+    meta(name='description' content=description)
+    meta(name='keywords' content='아이리포트')
+    meta(property="og:type" content="website")
+    meta(property="og:site_name" content="ireport")
+    meta(property="og:title" content="구축사례 | 아이리포트")
+    meta(property="og:description" content="AI 비전 솔루션 구축사례")
+    meta(property="og:image" content="http://plusuniv.com/img/og_img.png")
+    meta(property='og:image:alt', content='아이리포트 회사 로고')
+    meta(property="og:url" content="http://localhost:8888/construction-cases")
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/components.js")
+    script(type="text/javascript" src="/js/onscroll.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel="stylesheet" href='/css/main.css')
+
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    link(rel='apple-touch-icon' href='/apple-touch-icon.png')
+    link(rel='icon', href='/favicon32.svg' type="image/svg+xml" sizes="16x16 32x32 48x48")
+    link(rel='icon', href='/favicon.svg' type="image/svg+xml")
+
+  body
+    #app.is-black(:class="themeClass")
+      tnb(type="수행실적", :_this="this")
+      
+      // 상단 헤더 섹션 - 악수하는 배경 이미지 표시
+      .construction-header-section
+        .header-background
+        .header-content
+          h1.header-title 수행실적
+          p.header-subtitle Achievements
+      
+      main
+        .construction-cases-section
+          .container
+            .page-header
+              h1.page-title 구축사례
+              p.page-subtitle 다양한 분야에서 수행했던 사업 History를 소개합니다.
+            
+            .cases-table-wrapper
+              table.cases-table
+                thead
+                  tr
+                    th 순번
+                    th 고객사
+                    th 사업명
+                    th 사업기간
+                tbody
+                  if notices && notices.length > 0
+                    each notice, index in notices
+                      tr
+                        td= notices.length - index
+                        td.customer-name= notice.고객사 || '-'
+                        td.project-name= notice.사업명 || notice.제목 || '-'
+                        td= notice.사업기간 || notice.작성일 || '-'
+                  else
+                    tr
+                      td(colspan="4")
+                        .no-data 등록된 구축사례가 없습니다.
+      bnb
+      common-daemon
+      
+  script(type='text/javascript').
+    let isMobile = "#{mobile}" == "true"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        themeClass: {mobile: isMobile},
+        notices: !{JSON.stringify(notices || [])}
+      },
+      methods: {
+      },
+      computed: {
+      },
+      created() {
+      },
+      mounted() {
+      },
+      beforeDestroy() {
+      }
+    })

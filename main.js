@@ -32,6 +32,10 @@ const { generate } = require('randomstring')
 
 const { closeDB, onInit, savePageViewAndSEOData, findSome, findSomeWrapper, querySome, saveSome, pushSome, replaceSome, removeSome } = require("./db-core2")
 
+// Pug 템플릿 엔진 설정
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'pug'))
+
 dayjs.extend(customParseFormat) // use plugin
 dayjs.extend(isSameOrAfter) // use plugin
 
@@ -484,6 +488,46 @@ app.get(['/recruit'], pageViewAspect, (req, res, next) => {
 	res.setHeader('Page-Type', 'text/html')
 	console.log(md.mobile())
 	res.render('recruit', {mobile: !!md.mobile(), axiosAddr: baseURL, title: seo[req.url] ? seo[req.url].title : '', description: seo[req.url] ? seo[req.url].description : '' })
+})
+app.get(['/construction-cases'], pageViewAspect, (req, res, next) => {
+	let md = new MobileDetect(req.headers['user-agent'])
+	res.setHeader('Page-Type', 'text/html')
+	
+	// 구축사례 데이터 예시
+	const notices = [
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		},
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		},
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		},
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		},
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		},
+		{
+			고객사: '동대문구',
+			사업명: '동대문 가구주택기초조사 지도 구축',
+			사업기간: '25.01 - 25.04'
+		}
+	]
+	
+	res.render('construction-cases', {mobile: !!md.mobile(), axiosAddr: baseURL, title: seo[req.url] ? seo[req.url].title : '', description: seo[req.url] ? seo[req.url].description : '', notices: notices })
 })
 app.get(['/archievements'], pageViewAspect, (req, res, next) => {
 	let md = new MobileDetect(req.headers['user-agent'])
@@ -1026,329 +1070,5 @@ app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EB%A1%9C%EA%B7%B8%EC%95%84%EC%9B%83', asy
 
 app.listen(port, async () => {
 	console.log("HTTP 네트워크 소켓 리스닝 중...")
-
-	// When reading a table row, the querySome function is performed,
-	// and the source code of "if(_.isNil(maxId[tableName])) return result" is performed,
-	// If the maxId object is not initialized, it will always read an empty table row, the result: [].
-	// Therefore, maxId initialization is required.
-	// 테이블 로우 읽기시 querySome 함수를 수행하게 되는데,
-	// "if(_.isNil(maxId[tableName])) return result" 이란 소스코드를 수행하게 되며,
-	// maxId 객체가 초기화되지 않으면 항상 빈 테이블 로우를 읽게 된다.
-	// 따라서 maxId 초기화가 필요하다.
-
-	/*
-	const tableNameListObservable = of(
-		{tenancy: '매니테이블', tableNameList: await findSome({tenancy: '매니테이블', some: 'columns'})},
-		{tenancy: '매니팩토리', tableNameList: await findSome({tenancy: '매니팩토리', some: 'columns'})})
-
-	tableNameListObservable.subscribe(
-		async ({tenancy, tableNameList}) => {
-			if(_.isNil(tableNameList)) return
-			tableNameList = Object.keys(tableNameList)
-			for(const tableName of tableNameList)
-			{
-				const table = await findSome({tenancy: tenancy, some:`table-${tableName}`})
-				let lastElement
-				if(!_.isNil(table))
-					lastElement = _.last(_.last(table))
-				maxId[tableName] = _.toInteger(lastElement ? lastElement.id : 0) 
-			}
-		})
-	db.put(JSON.stringify({tenancy: '매니테이블', some: 'table-결재'}), [])
-	db.put(JSON.stringify({tenancy: '매니테이블', some: 'table-결재요청'}), [])
-	*/
-	// END
+	console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`)
 })
-
-app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, 'pug'))
-
-// row는 단일 행일 수도 행들 (배열)일 수도 있다.
-// 삭제 시에는 row 값이 {id: ?} 로 간소화 될 수 있다.
-function transactionTableRowOne(cmd, table, row) {
-	let tableIndex, rowIndex
-	[tableIndex, rowIndex] = getIndex(row.id)
-
-	switch(cmd)
-	{
-		case '읽기':
-		{
-			try {
-				return table[tableIndex][rowIndex]
-			} catch {
-				return undefined
-			}
-		}
-		case '대체':
-		{
-			if(table[tableIndex][rowIndex])
-				table[tableIndex][rowIndex] = row
-			break
-		}
-	}
-}
-async function deleteRows(tenancy, tableName, rows) {
-	console.log('rows', rows)
-	const [tableIndex, rowIndex] = [rows.map(e => getIndex(e.id)[0]), rows.map(e => getIndex(e.id)[1])]
-	const table = await findSome({tenancy: tenancy, some: `table-${tableName}`})
-	console.log('table before', table)
-	console.log('rows', rows)
-	// 데이터 삭제
-	for(let i = 0; i < tableIndex.length; i++)
-		table[tableIndex[i]][rowIndex[i]] = undefined
-	console.log('table after', table)
-	
-	return new Promise((res, rej) => {
-		saveSome({tenancy: tenancy, some: `table-${tableName}`, value: table})
-			.then(() => res())
-			.catch(() => rej())
-	})
-}
-async function saveRows({tenancy, tableName, rows}) {
-	let table = await findSome({tenancy: tenancy, some: `table-${tableName}`})
-	function AI() {
-		let partitionIndex = table[table.length - 1].length
-		if(partitionIndex > 9999)
-		{
-			partitionIndex = 0
-			table.push([])
-		}
-		return partitionIndex
-	}
-	if(!Array.isArray(table)) table = [[]]
-	if(!Array.isArray(table[table.length - 1])) table = [[]]
-	const insertIds = []
-	for(const row of rows)
-	{
-		row.id = AI()
-		table[table.length - 1].push(row)
-		insertIds.push((table.length - 1) * 10000 + row.id)
-		await saveSome({tenancy: tenancy, some: `table-${tableName}`, value: table})
-		maxId[tableName] = row.id
-	}
-	return insertIds
-}
-async function addOneRowSimple({tenancy, tableName, row}) {
-	let table = await findSome({tenancy: tenancy, some: `table-${tableName}`})
-	if(!Array.isArray(table)) table = []
-	table.push(row)
-	await saveSome({tenancy: tenancy, some: `table-${tableName}`, value: table})
-}
-async function addOneRow(req, res, options) {
-	delete req.body.row['null']
-	let noSend = false
-	if(_.has(options, 'noSend'))
-		noSend = options.noSend
-
-	//console.log('req.body', req.body)
-	try {
-		const insertId = await saveRows({tenancy: req.user.tenancy, tableName: req.body.tableName, rows: [req.body.row]})
-		if(!noSend)
-			res.send({code: 0, insertId: insertId[0]})
-	} catch(e) {
-		console.log(e)
-		throw new Error(`async function addOneRow: 쓰기 에러. ${tableName} <-- ${req.body.row}`)
-	}
-}
-
-/**
- * Add one Row to Table
- * 
- * 테이블 로우 1개 추가
- * @event
- * @param {METHOD} method - POST
- * @param {URL} url - /api/v2
- */
-app.post('/api/v2/', async (req, res, next) => {
-	if(!req.body.hasOwnProperty('tableName')) return next()
-	if(!req.body.hasOwnProperty('row')) return next()
-	try {
-		await addOneRow(req, res)
-		res.send({code: 0})
-	} catch(e) {
-		res.send(getMessage('쓰기오류'))
-	}
-	
-	next()
-})
-
-/**
- * 
- * 
- * R/W/A 한 개의 트랜잭션 실행
- * @function
- * @param {Object} AnonymousClass - req.method가 'POST' 값일 때 type='FIND_AND_SAVE', query={}, condition='그리고 포함'을 지정하면 찾기 후 쓰기 연산을 수행함.
- */
-async function transactionOne(req, res, option) {
-	if(!option) option = {}
-	if(!_.has(option, 'type')) option.type = null
-	if(!_.has(option, 'query')) option.query = null
-	if(!_.has(option, 'condition')) option.condition = null
-	if(!_.has(option, 'noSend')) option.noSend = false
-	let {type, query, condition, noSend} = option
-
-	if(!(req.method == 'PATCH' || req.method == 'PUT' || req.method == 'DELETE'))
-	{
-		if(_.isNil(type)) return
-	}
-	if(_.isNil(type)) type = ''
-
-	// Programming lookup functioning. 조회 기능 프로그래밍
-	try {
-		const some = `table-${req.body.tableName ? req.body.tableName : req.query.a}`
-		const table = await findSome({tenancy: req.user.tenancy, some: some})
-		//console.log('table', table)
-		if(table === undefined)
-		{
-			// The table is empty. Empty when table is new. 테이블이 비었습니다. 테이블 신규시 비어있음.
-			if(type === 'FIND_AND_SAVE')
-				type = 'FIND_AND_SAVE_FIRST'
-			else
-				throw new Error('async function transactionOne: 테이블이 비었습니다.')
-		}
-		let result = []
-		switch(`${req.method}-${type}`)
-		{
-			case 'PATCH-':
-			{
-				if(_.has(req.body, 'query')) // Search for conditions. 조건 검색.
-					result = await querySome(table, req.body.tableName, req.body.query, req.body.condition)
-				else // Search for ID. ID 검색.
-					req.body.rowIds.forEach(id => {
-						const row = transactionTableRowOne('읽기', table, {id: id})
-						delete row['null']
-						if(!_.isNil(row)) result.push(row)
-					})
-				//console.log('result', result)
-				res.result = result
-				if(!noSend)
-					res.send({code: 0, result: result})
-				break
-			}
-			case 'PUT-': // modification. 수정.
-			{
-				delete req.body.row['null']
-				await transactionTableRowOne('대체', table, req.body.row)
-				await saveSome({tenancy: req.user.tenancy, some: some, value: table})
-				if(!noSend)
-				{
-					const payload = {code: 0}
-					if(_.has(req.body.row, '서명1'))
-						payload['서명1'] = req.body.row['서명1'].split('/')[2]
-					if(_.has(req.body.row, '서명2'))
-						payload['서명2'] = req.body.row['서명2'].split('/')[2]
-					if(_.has(req.body.row, '서명3'))
-						payload['서명3'] = req.body.row['서명3'].split('/')[2]
-					res.send(payload)
-				}
-				break
-			}
-			case 'POST-PUT-': // 추가 또는 수정 (미완성)
-			{
-				delete req.body.row['null']
-				result = await querySome(table, req.body.tableName, query, condition)
-				if(result.length > 0) // 이미 존재하는 로우이므로 수정 연산 실행.
-				{
-					await transactionTableRowOne('대체', table, req.body.row)
-					await saveSome({tenancy: req.user.tenancy, some: some, value: table})
-					if(!noSend)
-					{
-						const payload = {code: 0}
-						res.send(payload)
-					}
-	
-				}
-				else if(result.length === 0) // 존재하지 않는 로우이므로 신규 추가.
-				{
-					//req.body.tableName와 req.body.row가 존재해야 함.
-					await addOneRow(req, res, {noSend: noSend})
-				}
-
-				break
-			}
-			case 'DELETE-':
-			{
-				await transactionTableRowOne('삭제', table, {id: req.query.b})
-				if(!noSend)
-					res.send({code: 0})
-				break
-			}
-			case 'POST-FIND_AND_SAVE': // 중복 검사 후 추가
-			{
-				result = await querySome(table, req.body.tableName, query, condition)
-				if(result.length > 0) // 이미 존재하는 로우이므로 추가하지 않고 연산 종료
-					throw new Error('async function transactionOne: 이미존재하는로우')
-				else if(result.length === 0) // 존재하지 않는 로우이므로 추가함.
-				{
-					//req.body.tableName와 req.body.row가 존재해야 함.
-					await addOneRow(req, res, {noSend: noSend})
-				}
-				break
-			}
-			case 'POST-FIND_AND_SAVE_FIRST': // 중복 검사 후 추가하려 하나 첫 추가인 경우
-			{
-				await addOneRow(req, res, {noSend: noSend})
-				break
-			}
-		}
-	} catch(e) {
-		console.log(e)
-		if(req.method == 'PATCH')
-			res.send(getMessage('읽기오류'))
-		else
-			res.send(getMessage('쓰기오류'))
-	}
-}
-
-app.all('*', (req, res, next) => {
-	if(req.url == '/favicon.ico') 
-		res.locals.canRendered = 1
-	else if(req.method != 'GET' && req.url.startsWith('/api/v2/'))
-		res.locals.canRendered = 1
-	else if(req.method == 'DELETE') // for Logout situation.
-		res.locals.canRendered = 1
-
-	if(res.locals.canRendered === undefined)
-	{
-		console.log('페이지 없음.')
-		//res.render('many-table/error', {})
-	}
-	next()
-})
-
-// 서버 시작 콜백 내에서
-async function onStartup() {
-	const obj = await onInit()
-
-	if(!!obj.pageViewMap['벌크0'])
-		pageViewBulky = obj.pageViewMap
-	else
-		pageViewMap = obj.pageViewMap
-
-	await pageViewManager.setBulkyFrom()
-
-	seo = obj.seo
-}
-onStartup()
-// 서버 종료 콜백 내에서
-async function exitHandler(options, exitCode) {
-	if(options.exit)
-	{
-		await pageViewManager.setBulkyFrom()
-		await savePageViewAndSEOData({pageViewBulky: pageViewBulky, seo: seo})
-		await cleanIpBlockMapHourly()
-		await closeDB()
-		console.log("Exit.")
-		process.exit()
-	}
-}
-
-// do something when app is closing
-process.on('exit', exitHandler.bind(null, {cleanup:true}))
-
-// catches ctrl+c event
-process.on('SIGINT', exitHandler.bind(null, {exit:true}))
-
-// catches "kill pid" (for example: nodemon restart)
-process.on('SIGUSR1', exitHandler.bind(null, {exit:true}))
-process.on('SIGUSR2', exitHandler.bind(null, {exit:true}))

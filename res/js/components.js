@@ -50,7 +50,7 @@ let Tnb = {
                         <div class="arrow-up-icon"></div>
                     </div>
                     <div class="menu-item-inner" :class="{active: selectedMenu == '수행실적', inactive: selectedMenu != '수행실적'}">
-                        <a href="/">구축사례</a>
+                        <a href="/construction-cases">구축사례</a>
                     </div>
                 </div>
                 <div @click="selectMenu('채용정보')">
@@ -117,6 +117,14 @@ let Tnb = {
         <div class="text">
             <span>채용정보</span>
             <span class="blue">Recruitment</span>
+        </div>
+    </div>
+    <div class="main-visual simple" v-if="type == '수행실적'">
+        <img class="frame" src="/img/top-frame.svg" alt=""/>
+        <div class="construction"/>
+        <div class="text">
+            <span>수행실적</span>
+            <span class="blue">Performance</span>
         </div>
     </div>
 </header>`,
