@@ -257,15 +257,21 @@ html(style='width: 100%;')
           },
           deleteItem(item) {
             console.log('삭제할 항목:', item)
+            console.log('삭제할 NO:', item.NO)
+            console.log('api_key:', api_key)
+            
             if (confirm(`"${item.고객사} - ${item.사업명}" 구축사례를 삭제하시겠습니까?`)) {
+              const deleteParam = { 
+                api_key,
+                tableName: 'TB_NOTICE1', 
+                option: { rowId: item.NO }
+              }
+              console.log('삭제 요청 파라미터:', deleteParam)
+              
               http({
                 uri: "게시판삭제", 
                 method: "delete", 
-                param: { 
-                  api_key,
-                  tableName: 'TB_NOTICE1', 
-                  option: { rowId: item.NO }
-                }, 
+                param: deleteParam, 
                 cb: (res) => {
                   console.log('서버 삭제 응답:', res)
                   if (res.code === 0) {

@@ -1000,7 +1000,10 @@ app.patch('/api/v2/table/update', hasJWT, async (req, res, next) => {
 		for (let someKey of Object.keys(meta.someMap)) {
 			let data = await findSome({tenancy: TENANCY, some: someKey})
 			if (Array.isArray(data)) {
-				const targetIndex = data.findIndex(item => item.NO == req.body.option.rowId)
+				const targetIndex = data.findIndex(item => {
+					console.log(item.NO, req.body.option.rowId)
+					return item.NO == req.body.option.rowId
+				})
 				if (targetIndex !== -1) {
 					// 기존 id와 NO를 유지하면서 다른 필드만 업데이트
 					const existingId = data[targetIndex].id
@@ -1041,6 +1044,8 @@ app.patch('/api/v2/table/update', hasJWT, async (req, res, next) => {
  * 테이블 로우 삭제
  */
 app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
+	console.log('[DELETE API] 요청 받음:', req.body)
+	
 	if(!req.body.hasOwnProperty('tableName')) return next()
 	if(!req.body.hasOwnProperty('option')) req.body.option = {}
 	
@@ -1053,9 +1058,13 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 	try {
 		// 메타데이터 가져오기
 		const metaKey = `table-${req.body.tableName}/메타`
+		console.log('[DELETE] 메타 키:', metaKey)
 		let meta = await findSome({tenancy: TENANCY, some: metaKey})
 		
+		console.log('[DELETE] 메타데이터:', meta)
+		
 		if (!meta || !meta.someMap) {
+			console.log('[DELETE] 메타데이터가 없음!')
 			res.send({code: 1, msg: '메타데이터를 찾을 수 없습니다.'})
 			return
 		}
@@ -1063,6 +1072,7 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 		// 모든 시간대의 데이터를 순회하면서 삭제
 		let deleted = false
 		console.log('[DELETE] 메타 someMap 키들:', Object.keys(meta.someMap))
+		console.log('[DELETE] 삭제할 rowId:', req.body.option.rowId, '타입:', typeof req.body.option.rowId)
 		
 		for (let someKey of Object.keys(meta.someMap)) {
 			console.log(`[DELETE] ${someKey} 키에서 데이터 검색 중...`)
@@ -1070,7 +1080,10 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 			
 			if (Array.isArray(data)) {
 				console.log(`[DELETE] ${someKey}에 ${data.length}개 항목 존재`)
-				const targetIndex = data.findIndex(item => item.NO == req.body.option.rowId)
+				const targetIndex = data.findIndex(item => {
+					console.log(`[DELETE] 비교중: item.NO=${item.NO}(${typeof item.NO}) vs rowId=${req.body.option.rowId}(${typeof req.body.option.rowId})`)
+					return item.NO == req.body.option.rowId
+				})
 				
 				if (targetIndex !== -1) {
 					console.log(`[DELETE] NO ${req.body.option.rowId} 항목을 ${someKey}에서 발견 (인덱스: ${targetIndex})`)
@@ -1093,17 +1106,21 @@ app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
 					}
 					deleted = true
 					break
+				} else {
+					console.log(`[DELETE] ${someKey}에서 rowId ${req.body.option.rowId} 찾지 못함`)
 				}
 			}
 		}
 		
 		if (deleted) {
+			console.log('[DELETE] 삭제 성공!')
 			res.send({code: 0})
 		} else {
+			console.log('[DELETE] 삭제할 항목을 찾지 못함!')
 			res.send({code: 1, msg: '삭제할 항목을 찾을 수 없습니다.'})
 		}
 	} catch(e) {
-		console.log(e)
+		console.log('[DELETE] 오류 발생:', e)
 		res.send(getMessage('쓰기오류'))
 	}
 })
