@@ -21,12 +21,12 @@ html(style='width: 100%;')
     
     style.
       .cases-table tbody tr:hover {
-        background-color: #f8f9fa !important;
+        background-color: #e8f4f8 !important;
         cursor: pointer;
       }
       .construction-cases-section {
         padding: 60px 0;
-        background: #fafafa;
+        background: #ffffff;
         min-height: 500px;
       }
       .container {
@@ -38,51 +38,118 @@ html(style='width: 100%;')
         background: #1a1a1a;
       }
       
-      /* 페이징 스타일 */
+      /* 테이블 스타일 개선 */
+      .cases-table-wrapper {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+      }
+      
+      .cases-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin: 0;
+      }
+      
+      .cases-table thead th {
+        background: #f8f9fa;
+        padding: 16px 20px;
+        text-align: center;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+      
+      .cases-table tbody tr {
+        border-bottom: 1px solid #f1f3f4;
+        transition: background-color 0.2s ease;
+      }
+      
+      .cases-table tbody tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+      
+      .cases-table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+      }
+      
+      .cases-table tbody td {
+        padding: 16px 20px;
+        text-align: center;
+        color: #495057;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      
+      .cases-table tbody td:first-child {
+        font-weight: 600;
+        color: #6c757d;
+      }
+      
+      .cases-table tbody td:nth-child(2) {
+        font-weight: 500;
+        color: #343a40;
+      }
+      
+      /* 페이징 스타일 개선 */
       .pagination-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: 40px;
-        gap: 10px;
+        gap: 8px;
       }
+      
       .pagination-btn {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
         background: white;
-        color: #333;
+        color: #6c757d;
         text-decoration: none;
-        border-radius: 4px;
-        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 14px;
-        min-width: 40px;
-        text-align: center;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
       }
+      
       .pagination-btn:hover {
-        background: #f8f9fa;
-        border-color: #007bff;
-        color: #007bff;
+        background: #e9ecef;
+        border-color: #adb5bd;
+        color: #495057;
       }
+      
       .pagination-btn.active {
         background: #007bff;
         color: white;
         border-color: #007bff;
+        font-weight: 600;
       }
+      
       .pagination-btn.disabled {
         background: #f8f9fa;
-        color: #999;
+        color: #ced4da;
         cursor: not-allowed;
         border-color: #e9ecef;
       }
+      
       .pagination-btn.disabled:hover {
         background: #f8f9fa;
-        color: #999;
+        color: #ced4da;
         border-color: #e9ecef;
       }
+      
       .pagination-info {
-        color: #666;
-        font-size: 14px;
-        margin: 0 15px;
+        display: none;
       }
 
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
@@ -106,39 +173,38 @@ html(style='width: 100%;')
       main
         .construction-cases-section
           .container
-            .page-header(style="text-align: center; margin-bottom: 50px;")
-              h1.page-title(style="font-size: 36px; margin-bottom: 15px; color: #333;") 구축사례
-              p.page-subtitle(style="font-size: 18px; color: #666;") 다양한 분야에서 수행했던 사업 History를 소개합니다.
+            .page-header(style="margin-bottom: 50px;")
+              h1.page-title(style="font-size: 32px; margin-bottom: 15px; color: #007bff; font-weight: 600; text-align: left;") 구축사례
+              p.page-subtitle(style="font-size: 16px; color: #6c757d; text-align: left;") 다양한 분야에서 수행했던 사업 History를 소개합니다.
             
-            .cases-table-wrapper(style="overflow-x: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px;")
-              table.cases-table(style="width: 100%; border-collapse: collapse; background: white;")
+            .cases-table-wrapper
+              table.cases-table
                 thead
-                  tr(style="background: #f5f5f5;")
-                    th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd;") 순번
-                    th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd;") 고객사
-                    th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd;") 사업명
-                    th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd;") 사업기간
+                  tr
+                    th 순번
+                    th 고객사
+                    th 사업명
+                    th 사업기간
                 tbody
                   if notices && notices.length > 0
                     each notice, index in notices
-                      tr(style="border-bottom: 1px solid #eee; transition: background 0.3s;")
-                        td(style="padding: 15px;")= ((pagination.currentPage - 1) * pagination.itemsPerPage) + index + 1
-                        td.customer-name(style="padding: 15px; font-weight: 500;")= notice.고객사 || '-'
-                        td.project-name(style="padding: 15px;")= notice.사업명 || notice.제목 || '-'
-                        td(style="padding: 15px; color: #666;")= notice.사업기간 || notice.작성일 || '-'
+                      tr
+                        td= pagination.totalItems - ((pagination.currentPage - 1) * pagination.itemsPerPage) - index
+                        td= notice.고객사 || '-'
+                        td= notice.사업명 || notice.제목 || '-'
+                        td= notice.사업기간 || notice.작성일 || '-'
                   else
                     tr
-                      td(colspan="4" style="padding: 40px; text-align: center; color: #999;")
-                        .no-data 등록된 구축사례가 없습니다.
+                      td(colspan="4" style="padding: 40px; color: #999;") 등록된 구축사례가 없습니다.
             
             // 페이징 네비게이션
             if pagination && pagination.totalPages > 1
               .pagination-wrapper
                 // 이전 페이지 버튼
                 if pagination.hasPrev
-                  a.pagination-btn(href=`/construction-cases?page=${pagination.prevPage}`) ‹ 이전
+                  a.pagination-btn(href=`/construction-cases?page=${pagination.prevPage}`) <
                 else
-                  span.pagination-btn.disabled ‹ 이전
+                  span.pagination-btn.disabled <
                 
                 // 페이지 번호들
                 each page in pagination.pages
@@ -149,13 +215,9 @@ html(style='width: 100%;')
                 
                 // 다음 페이지 버튼
                 if pagination.hasNext
-                  a.pagination-btn(href=`/construction-cases?page=${pagination.nextPage}`) 다음 ›
+                  a.pagination-btn(href=`/construction-cases?page=${pagination.nextPage}`) >
                 else
-                  span.pagination-btn.disabled 다음 ›
-                
-                // 페이지 정보
-                .pagination-info 
-                  span 총 #{pagination.totalItems}개 항목 (#{pagination.currentPage}/#{pagination.totalPages} 페이지)
+                  span.pagination-btn.disabled >
       
       bnb
       common-daemon
