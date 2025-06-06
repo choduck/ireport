@@ -3698,14 +3698,13 @@ footer .right-side a {
   height: 800px;
   overflow: hidden;
 }
-.construction-header-section .header-background {
+.construction-header-section .header-background-img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: url(/img/frame.svg) no-repeat center center !important;
-  background-size: cover !important;
+  object-fit: cover;
   z-index: 1;
 }
 .construction-header-section .header-content {

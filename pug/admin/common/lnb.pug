@@ -11,6 +11,9 @@ script(type="text/x-template" id="lnb")
       a.menu-item(:class="{'is-active': menuName == '어드민/게시판' || menuName == '어드민/게시판/리스트'}" href="/어드민/게시판")
         .board-icon
         span 게시판
+      a.menu-item(:class="{'is-active': menuName == '어드민/구축사례'}" href="/어드민/구축사례쓰기")
+        .board-icon
+        span 구축사례 등록
       a.menu-item(:class="{'is-active': menuName == '어드민/보안설정'}" href="/어드민/보안설정")
         .security-icon
         span 보안설정

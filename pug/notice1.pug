@@ -18,6 +18,15 @@ html(style='width: 100%;')
         script(type="text/javascript" src="/js/http.js")
 
         link(rel="stylesheet" href='/css/main.css')
+        
+        style.
+            .achievement-table-wrapper tbody tr:hover {
+                background-color: #f8f9fa !important;
+                cursor: pointer;
+            }
+            .achievement-header-section {
+                background: #1a1a1a;
+            }
 
         //link(rel='canonical' href='')
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
@@ -60,9 +69,62 @@ html(style='width: 100%;')
     body
         #app(:class="themeClass")
             tnb(type="수행실적", :_this="this")
+            
+            // 상단 헤더 섹션 - 악수하는 배경 이미지 표시
+            .achievement-header-section(style="position: relative; height: 400px; overflow: hidden;")
+                img(src="/img/frame.svg" alt="악수하는 배경" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;")
+                .header-overlay(style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);")
+                .header-content(style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2;")
+                    h1.header-title(style="color: white; font-size: 48px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); font-weight: 700;") 수행실적
+                    p.header-subtitle(style="color: white; font-size: 32px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);") Achievements
+            
             main
                 section
                     article.notice1
+                        .container(style="max-width: 1200px; margin: 0 auto; padding: 60px 20px;")
+                            h2(style="text-align: center; margin-bottom: 40px; font-size: 28px; color: #333;") 아이리포트 수행실적
+                            p(style="text-align: center; margin-bottom: 50px; color: #666;") 다양한 분야에서 수행했던 사업 History를 소개합니다.
+                            
+                            // 수행실적 테이블
+                            .achievement-table-wrapper(style="overflow-x: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px;")
+                                table(style="width: 100%; border-collapse: collapse; background: white;")
+                                    thead
+                                        tr(style="background: #f5f5f5;")
+                                            th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd; width: 10%;") 순번
+                                            th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd; width: 25%;") 고객사
+                                            th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd; width: 45%;") 사업명
+                                            th(style="padding: 15px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #ddd; width: 20%;") 사업기간
+                                    tbody
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 20
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 19
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 18
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 17
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 16
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
+                                        tr(style="border-bottom: 1px solid #eee;")
+                                            td(style="padding: 15px;") 15
+                                            td(style="padding: 15px; font-weight: 500;") 통계청
+                                            td(style="padding: 15px;") 통계청 가구주택기초조사 지도 구축
+                                            td(style="padding: 15px; color: #666;") 25.01 - 25.04
                         
             bnb
             common-daemon

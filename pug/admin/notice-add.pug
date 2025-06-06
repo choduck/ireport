@@ -41,18 +41,33 @@ html(style='width: 100%;')
           .h-stack
             .label 카테고리
             b-input.flex-1(type="text" v-model="category" disabled)
-          .h-stack
-            .label 국문제목
-            b-input.flex-1(type="text" v-model="title" placeholder="국문제목")
-          .h-stack
-            .label 국문내용
-            b-input.flex-1(type="textarea" v-model="content" placeholder="국문내용")
-          .h-stack
-            .label 영문제목
-            b-input.flex-1(type="text" v-model="titleEN" placeholder="영문제목")
-          .h-stack
-            .label 영문내용
-            b-input.flex-1(type="textarea" v-model="contentEN" placeholder="영문내용")
+          
+          // 구축사례인 경우 추가 필드 표시
+          template(v-if="category === '구축사례'")
+            .h-stack
+              .label 고객사
+              b-input.flex-1(type="text" v-model="customer" placeholder="고객사명을 입력하세요")
+            .h-stack
+              .label 사업명
+              b-input.flex-1(type="text" v-model="projectName" placeholder="사업명을 입력하세요")
+            .h-stack
+              .label 사업기간
+              b-input.flex-1(type="text" v-model="projectPeriod" placeholder="예: 25.01 - 25.04")
+          
+          // 일반 게시글인 경우 기존 필드 표시
+          template(v-else)
+            .h-stack
+              .label 국문제목
+              b-input.flex-1(type="text" v-model="title" placeholder="국문제목")
+            .h-stack
+              .label 국문내용
+              b-input.flex-1(type="textarea" v-model="content" placeholder="국문내용")
+            .h-stack
+              .label 영문제목
+              b-input.flex-1(type="text" v-model="titleEN" placeholder="영문제목")
+            .h-stack
+              .label 영문내용
+              b-input.flex-1(type="textarea" v-model="contentEN" placeholder="영문내용")
     include common/tnb-admin.pug
     include common/lnb.pug
 
@@ -71,17 +86,46 @@ html(style='width: 100%;')
         content: '',
         titleEN: '',
         contentEN: '',
+        customer: '',
+        projectName: '',
+        projectPeriod: '',
       },
       methods: {
         write: function () {
-          const row = {'카테고리': this.category, '국문제목': this.title, '국문내용': this.content, '영문제목': this.titleEN, '영문내용': this.contentEN}
+          let row = {
+            '카테고리': this.category
+          }
+          
+          // 구축사례인 경우 해당 필드만 포함
+          if (this.category === '구축사례') {
+            if (!this.customer || !this.projectName || !this.projectPeriod) {
+              alert("고객사, 사업명, 사업기간을 모두 입력해주세요.")
+              return
+            }
+            row['고객사'] = this.customer
+            row['사업명'] = this.projectName
+            row['사업기간'] = this.projectPeriod
+          } else {
+            // 일반 게시글인 경우 기존 필드 포함
+            row['국문제목'] = this.title
+            row['국문내용'] = this.content
+            row['영문제목'] = this.titleEN
+            row['영문내용'] = this.contentEN
+          }
+          
           http({uri:"게시판쓰기", method:"post", param: { api_key, tableName: 'TB_NOTICE1', row: row }, cb: (res) => {
             if(res.code === 0)
             {
-              alert("수정되었습니다.")
+              alert("등록되었습니다.")
+              // 등록 후 게시판으로 이동
+              if (this.category === '구축사례') {
+                window.location.href = '/construction-cases'
+              } else {
+                window.location.href = '/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90?n=n1'
+              }
             }
             else
-              alert("수정에 실패하였습니다.")
+              alert("등록에 실패하였습니다.")
           } })
 
         },

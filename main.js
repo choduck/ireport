@@ -489,45 +489,133 @@ app.get(['/recruit'], pageViewAspect, (req, res, next) => {
 	console.log(md.mobile())
 	res.render('recruit', {mobile: !!md.mobile(), axiosAddr: baseURL, title: seo[req.url] ? seo[req.url].title : '', description: seo[req.url] ? seo[req.url].description : '' })
 })
-app.get(['/construction-cases'], pageViewAspect, (req, res, next) => {
+app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 	let md = new MobileDetect(req.headers['user-agent'])
 	res.setHeader('Page-Type', 'text/html')
+	console.log(md.mobile())
 	
-	// 구축사례 데이터 예시
-	const notices = [
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
-		},
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
-		},
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
-		},
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
-		},
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
-		},
-		{
-			고객사: '동대문구',
-			사업명: '동대문 가구주택기초조사 지도 구축',
-			사업기간: '25.01 - 25.04'
+	try {
+		// 구축사례 데이터 가져오기
+		let notices = []
+		
+		// 하드코딩된 기본 구축사례 데이터 (백업용)
+		const defaultCases = [
+			{
+				고객사: '통계청',
+				사업명: '가구주택기초조사 지도 구축',
+				사업기간: '2025.01 ~ 2025.04',
+				작성일: '2025-01-01'
+			},
+			{
+				고객사: '창원특례시',
+				사업명: '도시계획 지도 구축',
+				사업기간: '2025.01 ~ 2025.04',
+				작성일: '2025-01-02'
+			},
+			{
+				고객사: '국립환경과학원',
+				사업명: '환경지도 구축',
+				사업기간: '2025.01 ~ 2025.04',
+				작성일: '2025-01-03'
+			},
+			{
+				고객사: 'KEITI',
+				사업명: '환경기술 평가 시스템',
+				사업기간: '2025.01 ~ 2025.04',
+				작성일: '2025-01-04'
+			},
+			{
+				고객사: 'EPIS',
+				사업명: '환경정보 통합시스템',
+				사업기간: '2025.01 ~ 2025.04',
+				작성일: '2025-01-05'
+			}
+		]
+		
+		try {
+			// API와 동일한 방식으로 데이터베이스에서 구축사례 데이터 조회
+			console.log('구축사례 데이터 조회 시작 (API 방식)...')
+			
+			// findSomeWrapper를 API와 동일하게 사용
+			const allData = await findSomeWrapper({
+				tenancy: TENANCY,
+				some: `table-TB_NOTICE1`,
+				rowId: '목록전체'
+			})
+			
+			console.log('findSomeWrapper 조회 결과:', allData)
+			console.log('데이터 타입:', typeof allData, '배열 여부:', Array.isArray(allData))
+			
+			if (allData && Array.isArray(allData) && allData.length > 0) {
+				// 구축사례만 필터링
+				const constructionCases = allData.filter(item => 
+					item && item['카테고리'] === '구축사례'
+				)
+				
+				console.log('필터링된 구축사례:', constructionCases)
+				
+				if (constructionCases.length > 0) {
+					notices = constructionCases.map(notice => {
+						return {
+							고객사: notice['고객사'] || notice['제목'] || '-',
+							사업명: notice['사업명'] || notice['국문제목'] || notice['내용'] || notice['국문내용'] || '-',
+							사업기간: notice['사업기간'] || notice['작성일'] || '-',
+							작성일: notice['작성일'] || notice['일자']
+						}
+					}).sort((a, b) => {
+						// 작성일 기준 내림차순 정렬 (최신순)
+						if (a.작성일 && b.작성일) {
+							return new Date(b.작성일) - new Date(a.작성일)
+						}
+						return 0
+					})
+				}
+			}
+			
+			// 데이터베이스에서 조회된 데이터가 없으면 기본 데이터 사용
+			if (notices.length === 0) {
+				console.log('DB에서 조회된 구축사례가 없어 기본 데이터 사용')
+				notices = defaultCases
+			}
+			
+		} catch (error) {
+			console.log('데이터베이스 조회 실패, 기본 데이터 사용:', error.message)
+			notices = defaultCases
 		}
-	]
-	
-	res.render('construction-cases', {mobile: !!md.mobile(), axiosAddr: baseURL, title: seo[req.url] ? seo[req.url].title : '', description: seo[req.url] ? seo[req.url].description : '', notices: notices })
+		
+		console.log('최종 구축사례 데이터:', notices)
+		
+		res.render('construction-cases', {
+			mobile: !!md.mobile(), 
+			axiosAddr: baseURL, 
+			title: seo[req.url] ? seo[req.url].title : '구축사례 | 아이리포트', 
+			description: seo[req.url] ? seo[req.url].description : 'AI 비전 솔루션 구축사례를 소개합니다.', 
+			notices: notices 
+		})
+	} catch (error) {
+		console.error('구축사례 페이지 렌더링 오류:', error)
+		// 에러 발생시 기본 데이터로 처리
+		res.render('construction-cases', {
+			mobile: !!md.mobile(), 
+			axiosAddr: baseURL, 
+			title: seo[req.url] ? seo[req.url].title : '구축사례 | 아이리포트', 
+			description: seo[req.url] ? seo[req.url].description : 'AI 비전 솔루션 구축사례를 소개합니다.', 
+			notices: [
+				{
+					고객사: '통계청',
+					사업명: '가구주택기초조사 지도 구축',
+					사업기간: '2025.01 ~ 2025.04',
+					작성일: '2025-01-01'
+				},
+				{
+					고객사: '창원특례시',
+					사업명: '도시계획 지도 구축',
+					사업기간: '2025.01 ~ 2025.04',
+					작성일: '2025-01-02'
+				}
+			]
+		})
+	}
 })
 app.get(['/archievements'], pageViewAspect, (req, res, next) => {
 	let md = new MobileDetect(req.headers['user-agent'])
@@ -545,7 +633,7 @@ const urlMap = {
 	'/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90': 'admin/notice-main',
 	'/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%A1%B0%ED%9A%8C%EC%9A%94%EC%B2%AD': 'admin/notice'
 }
-app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC'], pageViewAspect, (req, res, next) => {
+app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC', '/어드민'], pageViewAspect, (req, res, next) => {
 	res.render('admin/login')
 })
 // /admin/notice 게시판 조회
@@ -595,6 +683,12 @@ app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%93%B0%EA%B8
 	else
 		res.render('admin/notice-add', {category: req.query.category})
 })
+
+// /admin/construction-cases-add 구축사례 전용 글쓰기
+app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B5%AC%EC%B6%95%EC%82%AC%EB%A1%80%EC%93%B0%EA%B8%B0', hasJWT, (req, res, next) => {
+	res.render('admin/notice-add', {category: '구축사례'})
+})
+
 // /admin/image-notice-add /어드민/이미지게시판쓰기
 app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%93%B0%EA%B8%B0', hasJWT, (req, res, next) => {
 	res.render('admin/image-notice-add', {category: req.query.category})
@@ -768,6 +862,7 @@ app.patch('/api/v2/table', async (req, res, next) => {
 	}
 	
 	try {
+		let value
 		if(req.body.option.rowId == '목록전체')
 			value = await findSomeWrapper({tenancy: TENANCY, some: `table-${req.body.tableName}`, rowId: '목록전체'})			
 		else if(req.body.option.rowId == '전체')
@@ -792,32 +887,7 @@ app.patch('/api/v2/table', async (req, res, next) => {
 		res.send(getMessage('읽기오류'))
 	}
 })
-/**
- * Search Table
- * req.body = {tableName, row, option: {rowId, range}}
- * 테이블 검색
- * @event
- * @param {METHOD} method - PATCH
- * @param {URL} url - /api/v2
- */
-app.patch('/api/v2/table/search', async (req, res, next) => {
-	if(!req.body.hasOwnProperty('tableName')) return next()
-	if(!req.body.hasOwnProperty('option')) req.body.option = {}
-	
-	// 허용된 테이블명 체크
-	if(req.body.tableName != "TB_NOTICE1")
-	{
-		res.send({code: 1})
-		return
-	}
-	try {
-		const data = await querySome({tenancy: TENANCY, some: req.body.tableName, query: {row: req.body.option.row}, condition: req.body.option.condition})
-		res.send({code: 0, data: data})
-	} catch(e) {
-		console.log(e)
-		res.send(getMessage('읽기오류'))
-	}
-})
+
 /**
  * Append Table
  * req.body = {tableName, row}
@@ -847,112 +917,6 @@ app.post('/api/v2/table', hasJWT, async (req, res, next) => {
 		res.send(getMessage('쓰기오류'))
 	}
 })
-/**
- * Edit Table
- * req.body = {tableName, datetime, row}
- * 테이블 수정
- * @event
- * @param {METHOD} method - PUT
- * @param {URL} url - /api/v2
- */
-app.put('/api/v2/table', hasJWT, async (req, res, next) => {
-	if(!req.body.hasOwnProperty('tableName')) return next()
-	if(!req.body.hasOwnProperty('datetime')) return next()
-	if(!req.body.hasOwnProperty('row')) return next()
-	
-	// 허용된 테이블명 체크
-	if(req.body.tableName != "TB_NOTICE1")
-	{
-		res.send({code: 1})
-		return
-	}
-
-	try {
-		const result = await replaceSome({tenancy: TENANCY, some: `table-${req.body.tableName}`, datetime: req.body.datetime, row: req.body.row})
-		res.send(result)
-	} catch(e) {
-		res.send(getMessage('쓰기오류'))
-	}
-})
-/**
- * Remove Table Row
- * req.query = {tableName, datetime, NO}
- * 테이블 내용 삭제
- * @event
- * @param {METHOD} method - DELETE
- * @param {URL} url - /api/v2
- */
-app.delete('/api/v2/table', hasJWT, async (req, res, next) => {
-	if(!req.query.hasOwnProperty('tableName')) return next()
-	if(!req.query.hasOwnProperty('datetime')) return next()
-	if(!req.query.hasOwnProperty('NO')) return next()
-	
-	// 허용된 테이블명 체크
-	if(req.query.tableName != "TB_NOTICE1")
-	{
-		res.send({code: 1})
-		return
-	}
-
-	try {
-		const result = await removeSome({tenancy: TENANCY, some: `table-${req.query.tableName}`, datetime: req.query.datetime, NO: req.query.NO})
-		res.send(result)
-	} catch(e) {
-		res.send(getMessage('쓰기오류'))
-	}
-})
-let UploadNumberAI = 0
-
-app.post('/api/v2/image-table', hasJWT, uploadMultiple, async (req, res) => {
-	
-	// 허용된 테이블명 체크
-	if(req.body.tableName != "TB_IM_NOTICE1")
-	{
-		res.send({code: 1})
-		return
-	}
-	UploadNumberAI++
-	const Row = []
-	if(!Array.isArray(req.body.text)) req.body.text = [req.body.text]
-	req.body.part.forEach(part => {
-		//if(!text.size) return
-		let buf = part
-		//let buf = text.buffer.toString()
-		let type = buf.substring(0, 1)
-		let order = Number(buf.substring(1, 3))
-		if(isNaN(order)) return
-		if(type == 'T')
-			Row.push({order: order, type: 'text', content: buf.substring(2)})
-		else if(type == 'I')
-		{
-			//let buf = file.buffer.toString()
-
-			// 이미지 파일 이름 정하기
-			let filename = `${new Date().toISOString().split('T')[0]}-${UploadNumberAI}-${order}`
-			try {
-				let [ext, content] = buf.split(',')
-				if(!ext) return
-				ext = '.' + ext.replace(';base64', '').split('/')[1]
-				// 이미지 파일 이름 저장
-				fs.writeFileSync(`images/${filename + ext}`, content, 'base64')
-				Row.push({order: order, type: 'image', content: filename + ext})
-			} catch(e) {}
-		}
-	})
-	Row.sort((a, b) => {
-		return a.order - b.order
-	})
-	Row.forEach((row, index) => {
-		console.log(row.content)
-	})
-	try {
-		await pushSome({tenancy: TENANCY, some: `table-${req.body.tableName}`, value: Row, onAfter: (err) => {		}})
-		res.send({code: 0})
-	} catch(e) {
-		console.log(e)
-		res.send(getMessage('쓰기오류'))
-	}
-})
 
 let AI = 0 // DB 재시작시 값이 저장되어야 함.
 function issueJWT (username) {
@@ -964,8 +928,6 @@ function issueJWT (username) {
 	if(!username)
 	{
 		username = "api.v2.jwt.AI." + AI
-		//const md5 = crypto.createHash('sha1')
-		//username = md5.update(username).digest().toString('hex')
 	}
 
 	const jwtPayload = {
@@ -1042,7 +1004,7 @@ app.patch('/api/v2/login', hasLoginJWT, async (req, res, next) => {
 				const token = issueJWT(req.body.id)
 				if(!!token)
 				{
-					res.cookie('myCookie', token, { httpOnly: va.COOKIE_HTTPONLY, secure: va.COOKIE_SECURE, sameSite: 'strict', maxAge: 1000 * 60 * 60 * 1, signed: true }) //domain: va.COOKIE_DOMAIN
+					res.cookie('myCookie', token, { httpOnly: va.COOKIE_HTTPONLY, secure: va.COOKIE_SECURE, sameSite: 'strict', maxAge: 1000 * 60 * 60 * 1, signed: true })
 					res.send({ code: 0 })
 					return
 				}
@@ -1053,6 +1015,7 @@ app.patch('/api/v2/login', hasLoginJWT, async (req, res, next) => {
 		res.send(getMessage('읽기오류'))
 	}
 })
+
 /**
  * Admin Logout
  * 
@@ -1063,9 +1026,10 @@ app.patch('/api/v2/login', hasLoginJWT, async (req, res, next) => {
  */
 app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EB%A1%9C%EA%B7%B8%EC%95%84%EC%9B%83', async (req, res, next) => {
 	const token = "ddd"
-	res.cookie('myCookie', token, { httpOnly: va.COOKIE_HTTPONLY, secure: va.COOKIE_SECURE, sameSite: 'strict', maxAge: 1000 * 2, signed: true }) //domain: va.COOKIE_DOMAIN
+	res.cookie('myCookie', token, { httpOnly: va.COOKIE_HTTPONLY, secure: va.COOKIE_SECURE, sameSite: 'strict', maxAge: 1000 * 2, signed: true })
 	res.redirect('/%EC%96%B4%EB%93%9C%EB%AF%BC')
 })
+
 // END 끝
 
 app.listen(port, async () => {
