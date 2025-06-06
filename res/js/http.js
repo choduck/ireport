@@ -238,9 +238,13 @@ function http(e) {
 		}
 		case '게시판읽기':
 		case '게시판쓰기':
-		case '게시판수정':
 		{
 			e.uri = '/api/v2/table'
+			break
+		}
+		case '게시판수정':
+		{
+			e.uri = '/api/v2/table/update'
 			break
 		}
 		case '이미지게시판쓰기':
@@ -264,8 +268,7 @@ function http(e) {
 		}
 		case '게시판삭제':
 		{
-			e.uri = '/api/v2/table' + URLEncode(e.param)
-			e.param = {}
+			e.uri = '/api/v2/table/delete'
 			break
 		}
 		case '게시판검색':

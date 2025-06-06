@@ -686,13 +686,13 @@ app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC', '/어드민'], pageViewAspect, (req, re
 app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%A1%B0%ED%9A%8C'], hasJWT, pageViewAspect, (req, res, next) => {
 	const localsValue = locals[getHash(req.signedCookies.myCookie)]
 	if(!!localsValue)
-		res.render('admin/notice', {tableName: localsValue.tableName, noticeName: localsValue.noticeName})
+		res.render('admin/notice', {tableName: localsValue.tableName, noticeName: localsValue.noticeName, api_key: uniqueGenerate()})
 	else
 		res.sendStatus(401)
 })
 app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%ED%8A%B8%EB%9E%98%ED%94%BD', hasJWT, pageViewAspect, async (req, res, next) => {
 	await pageViewManager.setBulkyFrom()
-	res.render('admin/traffic', {pageViewBulky: JSON.stringify(pageViewBulky)})
+	res.render('admin/traffic', {pageViewBulky: JSON.stringify(pageViewBulky), api_key: uniqueGenerate()})
 })
 app.get(Object.keys(urlMap), hasJWT, pageViewAspect, (req, res, next) => {
 	const pugFile = urlMap[req.url.split('?')[0]]
@@ -701,7 +701,7 @@ app.get(Object.keys(urlMap), hasJWT, pageViewAspect, (req, res, next) => {
 		if(pugFile == 'admin/main')
 		{
 			let count = '---'
-			res.render(pugFile, { count: count, email: email.reception })
+			res.render(pugFile, { count: count, email: email.reception, api_key: uniqueGenerate() })
 			return
 		}
 		else if(pugFile == 'admin/notice')
@@ -714,7 +714,7 @@ app.get(Object.keys(urlMap), hasJWT, pageViewAspect, (req, res, next) => {
 			res.redirect('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%A1%B0%ED%9A%8C')
 		}
 		else
-			res.render(pugFile)
+			res.render(pugFile, {api_key: uniqueGenerate()})
 	}
 	else 
 	{
@@ -727,26 +727,31 @@ app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%93%B0%EA%B8
 	if(!req.query.category)
 		res.sendStatus(404)
 	else
-		res.render('admin/notice-add', {category: req.query.category})
+		res.render('admin/notice-add', {category: req.query.category, api_key: uniqueGenerate()})
 })
 
 // /admin/construction-cases-add 구축사례 전용 글쓰기
-app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B5%AC%EC%B6%95%EC%82%AC%EB%A1%80%EC%93%B0%EA%B8%B0', hasJWT, (req, res, next) => {
-	res.render('admin/notice-add', {category: '구축사례'})
+app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B5%AC%EC%B6%95%EC%82%AC%EB%A1%80%EC%93%B0%EA%B8%B0', '/어드민/구축사례쓰기'], hasJWT, (req, res, next) => {
+	res.render('admin/construction-cases-add', {api_key: uniqueGenerate()})
+})
+
+// /admin/construction-cases-manage 구축사례 관리
+app.get(['/%EC%96%B4%EB%93%9C%EB%AF%BC/%EA%B5%AC%EC%B6%95%EC%82%AC%EB%A1%80%EA%B4%80%EB%A6%AC', '/어드민/구축사례관리'], hasJWT, (req, res, next) => {
+	res.render('admin/construction-cases-manage', {api_key: uniqueGenerate()})
 })
 
 // /admin/image-notice-add /어드민/이미지게시판쓰기
 app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B2%8C%EC%8B%9C%ED%8C%90%EC%93%B0%EA%B8%B0', hasJWT, (req, res, next) => {
-	res.render('admin/image-notice-add', {category: req.query.category})
+	res.render('admin/image-notice-add', {category: req.query.category, api_key: uniqueGenerate()})
 	return
 	if(!req.query.category)
 		res.sendStatus(404)
 	else
-		res.render('admin/notice-add', {category: req.query.category})
+		res.render('admin/notice-add', {category: req.query.category, api_key: uniqueGenerate()})
 })
 // /admin/ddos-monitor /어드민/디도스모니터링
 app.get('/%EC%96%B4%EB%93%9C%EB%AF%BC/%EB%94%94%EB%8F%84%EC%8A%A4%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81', hasJWT, (req, res, next) => {
-	res.render('admin/ddos-monitor', {})
+	res.render('admin/ddos-monitor', {api_key: uniqueGenerate()})
 	return
 })
 
@@ -761,7 +766,7 @@ app.get('/admin/notice/:noticeName/:NO', hasJWT, async (req, res, next) => {
 		return
 	}
 	const noticeNo = Number(req.params.NO)
-	res.render('admin/notice-get', {tableName: tableName, noticeNo: noticeNo})
+	res.render('admin/notice-get', {tableName: tableName, noticeNo: noticeNo, api_key: uniqueGenerate()})
 })
 
 
@@ -958,6 +963,145 @@ app.post('/api/v2/table', hasJWT, async (req, res, next) => {
 
 		}})
 		res.send({code: 0})
+	} catch(e) {
+		console.log(e)
+		res.send(getMessage('쓰기오류'))
+	}
+})
+
+/**
+ * Update Table Row
+ * req.body = {tableName, row, option: {rowId}}
+ * 테이블 로우 수정
+ */
+app.patch('/api/v2/table/update', hasJWT, async (req, res, next) => {
+	if(!req.body.hasOwnProperty('tableName')) return next()
+	if(!req.body.hasOwnProperty('row')) return next()
+	if(!req.body.hasOwnProperty('option')) req.body.option = {}
+	
+	// 허용된 테이블명 체크
+	if(req.body.tableName != "TB_NOTICE1") {
+		res.send({code: 1})
+		return
+	}
+
+	try {
+		// 메타데이터 가져오기
+		const metaKey = `table-${req.body.tableName}/메타`
+		let meta = await findSome({tenancy: TENANCY, some: metaKey})
+		
+		if (!meta || !meta.someMap) {
+			res.send({code: 1, msg: '메타데이터를 찾을 수 없습니다.'})
+			return
+		}
+		
+		// 모든 시간대의 데이터를 순회하면서 수정
+		let updated = false
+		for (let someKey of Object.keys(meta.someMap)) {
+			let data = await findSome({tenancy: TENANCY, some: someKey})
+			if (Array.isArray(data)) {
+				const targetIndex = data.findIndex(item => item.NO == req.body.option.rowId)
+				if (targetIndex !== -1) {
+					// 기존 id와 NO를 유지하면서 다른 필드만 업데이트
+					const existingId = data[targetIndex].id
+					const existingNO = data[targetIndex].NO
+					const existingDate = data[targetIndex].일시 || data[targetIndex].일자
+					
+					// 업데이트할 데이터 준비
+					data[targetIndex] = {
+						...data[targetIndex],
+						...req.body.row,
+						id: existingId,
+						NO: existingNO,
+						일시: existingDate
+					}
+					
+					// 수정된 데이터 저장
+					await saveSome({tenancy: TENANCY, some: someKey, value: data})
+					updated = true
+					break
+				}
+			}
+		}
+		
+		if (updated) {
+			res.send({code: 0})
+		} else {
+			res.send({code: 1, msg: '수정할 항목을 찾을 수 없습니다.'})
+		}
+	} catch(e) {
+		console.log(e)
+		res.send(getMessage('쓰기오류'))
+	}
+})
+
+/**
+ * Delete Table Row
+ * req.body = {tableName, row, option: {rowId}}
+ * 테이블 로우 삭제
+ */
+app.delete('/api/v2/table/delete', hasJWT, async (req, res, next) => {
+	if(!req.body.hasOwnProperty('tableName')) return next()
+	if(!req.body.hasOwnProperty('option')) req.body.option = {}
+	
+	// 허용된 테이블명 체크
+	if(req.body.tableName != "TB_NOTICE1") {
+		res.send({code: 1})
+		return
+	}
+
+	try {
+		// 메타데이터 가져오기
+		const metaKey = `table-${req.body.tableName}/메타`
+		let meta = await findSome({tenancy: TENANCY, some: metaKey})
+		
+		if (!meta || !meta.someMap) {
+			res.send({code: 1, msg: '메타데이터를 찾을 수 없습니다.'})
+			return
+		}
+		
+		// 모든 시간대의 데이터를 순회하면서 삭제
+		let deleted = false
+		console.log('[DELETE] 메타 someMap 키들:', Object.keys(meta.someMap))
+		
+		for (let someKey of Object.keys(meta.someMap)) {
+			console.log(`[DELETE] ${someKey} 키에서 데이터 검색 중...`)
+			let data = await findSome({tenancy: TENANCY, some: someKey})
+			
+			if (Array.isArray(data)) {
+				console.log(`[DELETE] ${someKey}에 ${data.length}개 항목 존재`)
+				const targetIndex = data.findIndex(item => item.NO == req.body.option.rowId)
+				
+				if (targetIndex !== -1) {
+					console.log(`[DELETE] NO ${req.body.option.rowId} 항목을 ${someKey}에서 발견 (인덱스: ${targetIndex})`)
+					console.log(`[DELETE] 삭제 전 항목:`, data[targetIndex])
+					
+					// 해당 항목 삭제
+					data.splice(targetIndex, 1)
+					console.log(`[DELETE] 삭제 후 데이터 개수: ${data.length}`)
+					
+					// 데이터가 비어있으면 메타에서도 제거
+					if (data.length === 0) {
+						console.log(`[DELETE] ${someKey}가 비어있으므로 메타에서 제거`)
+						delete meta.someMap[someKey]
+						await saveSome({tenancy: TENANCY, some: metaKey, value: meta})
+						// 빈 데이터는 저장하지 않음
+					} else {
+						// 수정된 데이터 저장
+						console.log(`[DELETE] 수정된 데이터를 ${someKey}에 저장`)
+						await saveSome({tenancy: TENANCY, some: someKey, value: data})
+					}
+					deleted = true
+					break
+				}
+			}
+		}
+		
+		if (deleted) {
+			res.send({code: 0})
+		} else {
+			res.send({code: 1, msg: '삭제할 항목을 찾을 수 없습니다.'})
+		}
 	} catch(e) {
 		console.log(e)
 		res.send(getMessage('쓰기오류'))

@@ -1,0 +1,194 @@
+html(style='width: 100%;')
+  head
+    title 구축사례 등록 | 아이리포트 어드민
+    meta(name='description' content='구축사례 등록')
+    meta(name='keywords' content='아이리포트, 어드민')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    meta(charset='utf-8')
+
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/grunt-build.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+  body
+    #app
+      main
+        tnb-admin
+        lnb(menu-name="구축사례 등록")
+        .main-inner
+          .data-control
+            button.is-left(@click="goBack") 목록으로
+            button.is-right(@click="write") 등록
+          
+          .form-container
+            .field
+              label.label 고객사 *
+              .control
+                input.input(type="text" v-model="customer" placeholder="고객사명을 입력하세요" maxlength="100")
+            
+            .field
+              label.label 사업명 *
+              .control
+                input.input(type="text" v-model="projectName" placeholder="사업명을 입력하세요" maxlength="200")
+            
+            .field
+              label.label 사업기간 *
+              .control
+                input.input(type="text" v-model="projectPeriod" placeholder="예: 25.01 ~ 25.04" maxlength="50")
+            
+            .field
+              label.label 설명 (선택)
+              .control
+                textarea.textarea(v-model="description" placeholder="프로젝트에 대한 추가 설명을 입력하세요" rows="4")
+
+    include common/tnb-admin.pug
+    include common/lnb.pug
+
+  script(type="text/javascript" src="/js/components.js")
+  script(type='text/javascript').
+    let api_key = "#{api_key}"
+    var v = new Vue({
+      el: '#app',
+      components: {
+      },
+      data: {
+        customer: '',
+        projectName: '',
+        projectPeriod: '',
+        description: ''
+      },
+      methods: {
+        write: function () {
+          // 필수 필드 검증
+          if (!this.customer.trim()) {
+            alert("고객사를 입력해주세요.")
+            return
+          }
+          if (!this.projectName.trim()) {
+            alert("사업명을 입력해주세요.")
+            return
+          }
+          if (!this.projectPeriod.trim()) {
+            alert("사업기간을 입력해주세요.")
+            return
+          }
+          
+          let row = {
+            '카테고리': '구축사례',
+            '고객사': this.customer.trim(),
+            '사업명': this.projectName.trim(),
+            '사업기간': this.projectPeriod.trim()
+          }
+          
+          // 설명이 있으면 추가
+          if (this.description.trim()) {
+            row['설명'] = this.description.trim()
+          }
+          
+          // 작성일자 추가
+          const now = new Date()
+          row['일자'] = now.toISOString().split('T')[0]
+          row['일시'] = now.toISOString()
+          
+          http({
+            uri: "게시판쓰기", 
+            method: "post", 
+            param: { 
+              api_key, 
+              tableName: 'TB_NOTICE1', 
+              row: row 
+            }, 
+            cb: (res) => {
+              console.log('등록 응답:', res)
+              if(res.code === 0) {
+                alert("구축사례가 등록되었습니다.")
+                window.location.href = '/어드민/구축사례관리'
+              } else {
+                alert("등록에 실패하였습니다: " + (res.msg || res.message || '알 수 없는 오류'))
+              }
+            },
+            ecb: (error) => {
+              console.error('등록 오류:', error)
+              alert("등록 중 오류가 발생했습니다.")
+            }
+          })
+        },
+        goBack: function () {
+          window.location.href = '/어드민/구축사례관리'
+        }
+      }
+    })
+
+  style.
+    .form-container {
+      max-width: 600px;
+      padding: 20px;
+    }
+    
+    .field {
+      margin-bottom: 20px;
+    }
+    
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .input, .textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    .input:focus, .textarea:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+    
+    .textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .data-control {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .data-control button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    .data-control button.is-left {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .data-control button.is-left:hover {
+      background-color: #5a6268;
+    }
+    
+    .data-control button.is-right {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .data-control button.is-right:hover {
+      background-color: #0056b3;
+    }

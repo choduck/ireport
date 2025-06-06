@@ -1,0 +1,566 @@
+html(style='width: 100%;')
+  head
+    title 구축사례 관리 | 아이리포트 어드민
+    meta(name='description' content='구축사례 관리')
+    meta(name='keywords' content='아이리포트, 어드민')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    meta(charset='utf-8')
+    
+    script(type="text/javascript" src="/js/vue.js")
+    script(type="text/javascript" src="/js/grunt-build.js")
+    script(type="text/javascript" src="/js/axios.js")
+    script(type="text/javascript" src="/js/http.js")
+
+    link(rel='stylesheet' href='/css/buefy.css')
+    link(rel="stylesheet" href='/css/admin.css')
+
+  body
+    #app(@click.self="deselect")
+      main
+        tnb-admin
+        lnb(menu-name="구축사례 관리")
+        .main-inner
+          .data-control
+            button.is-left(@click="deleteSelected" :disabled="!selectedItems.length") 선택 삭제
+            button.is-right(@click="goToAdd") 구축사례 등록
+          
+          .construction-cases-table
+            table.admin-table
+              thead
+                tr
+                  th.checkbox-col
+                    input(type="checkbox" @change="toggleSelectAll" :checked="isAllSelected")
+                  th.no-col 번호
+                  th.customer-col 고객사  
+                  th.project-col 사업명
+                  th.period-col 사업기간
+                  th.date-col 작성일
+                  th.action-col 관리
+              tbody
+                tr(v-if="!paginatedCases.length")
+                  td(colspan="7" style="text-align: center; padding: 40px; color: #999;") 등록된 구축사례가 없습니다.
+                tr(v-for="(item, index) in paginatedCases" :key="item.id || index")
+                  td.checkbox-col
+                    input(type="checkbox" :value="item" v-model="selectedItems")
+                  td.no-col {{ totalItems - ((currentPage - 1) * itemsPerPage + index) }}
+                  td.customer-col {{ item.고객사 || '-' }}
+                  td.project-col {{ item.사업명 || '-' }}
+                  td.period-col {{ item.사업기간 || '-' }}
+                  td.date-col {{ formatDate(item.작성일) || formatDate(item.일자) || '-' }}
+                  td.action-col
+                    button.edit-btn(@click="editItem(item)") 수정
+                    button.delete-btn(@click="deleteItem(item)") 삭제
+
+          .pagination-container(v-if="totalPages > 1")
+            nav.pagination
+              button.pagination-btn(@click="goToPage(currentPage - 1)" :disabled="currentPage <= 1") <
+              button.pagination-btn(
+                v-for="page in visiblePages" 
+                :key="page"
+                @click="goToPage(page)"
+                :class="{ active: page === currentPage }"
+              ) {{ page }}
+              button.pagination-btn(@click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages") >
+
+      .modal(:class="{'is-active': isEditModalOpen}")
+        .modal-background(@click="closeEditModal")
+        .modal-card
+          header.modal-card-head
+            p.modal-card-title 구축사례 수정
+            button.delete(@click="closeEditModal")
+          section.modal-card-body
+            .field
+              label.label 고객사
+              .control
+                input.input(type="text" v-model="editForm.고객사" placeholder="고객사명을 입력하세요")
+            .field
+              label.label 사업명  
+              .control
+                input.input(type="text" v-model="editForm.사업명" placeholder="사업명을 입력하세요")
+            .field
+              label.label 사업기간
+              .control
+                input.input(type="text" v-model="editForm.사업기간" placeholder="예: 25.01 ~ 25.04")
+          footer.modal-card-foot
+            button.button.is-success(@click="saveEdit") 저장
+            button.button(@click="closeEditModal") 취소
+
+    include common/tnb-admin.pug
+    include common/lnb.pug
+
+    script(type="text/javascript" src="/js/components.js")
+    script(type='text/javascript').
+      let api_key = "#{api_key}"
+      var v = new Vue({
+        el: '#app',
+        components: {
+        },
+        data: {
+          constructionCases: [],
+          selectedItems: [],
+          isEditModalOpen: false,
+          editForm: {
+            id: null,
+            NO: null,
+            고객사: '',
+            사업명: '',
+            사업기간: ''
+          },
+          originalEditItem: null,
+          currentPage: 1,
+          itemsPerPage: 10
+        },
+        computed: {
+          totalItems() {
+            return this.constructionCases.length
+          },
+          totalPages() {
+            return Math.ceil(this.totalItems / this.itemsPerPage)
+          },
+          paginatedCases() {
+            const start = (this.currentPage - 1) * this.itemsPerPage
+            const end = start + this.itemsPerPage
+            return this.constructionCases.slice(start, end)
+          },
+          visiblePages() {
+            const pages = []
+            const start = Math.max(1, this.currentPage - 2)
+            const end = Math.min(this.totalPages, start + 4)
+            
+            for (let i = start; i <= end; i++) {
+              pages.push(i)
+            }
+            return pages
+          },
+          isAllSelected() {
+            return this.paginatedCases.length > 0 && this.selectedItems.length === this.paginatedCases.length
+          }
+        },
+        methods: {
+          loadConstructionCases() {
+            http({
+              uri: "게시판읽기", 
+              method: "patch", 
+              param: { 
+                api_key, 
+                tableName: 'TB_NOTICE1', 
+                row: {}, 
+                option: { rowId: '목록전체' } 
+              }, 
+              cb: (res) => {
+                console.log('API 응답:', res)
+                if (res.code === 0) {
+                  if (Array.isArray(res.data)) {
+                    this.constructionCases = res.data.filter(item => 
+                      item && item['카테고리'] === '구축사례'
+                    ).sort((a, b) => {
+                      const dateA = new Date(a.일시 || a.작성일 || a.일자)
+                      const dateB = new Date(b.일시 || b.작성일 || b.일자)
+                      return dateB - dateA
+                    })
+                    
+                    if (this.constructionCases.length > 0) {
+                      console.log('첫 번째 구축사례 항목 구조:', this.constructionCases[0])
+                      console.log('사용 가능한 키들:', Object.keys(this.constructionCases[0]))
+                    }
+                  } else {
+                    this.constructionCases = []
+                  }
+                  this.selectedItems = []
+                  console.log('필터링된 구축사례:', this.constructionCases)
+                } else {
+                  alert("데이터 조회에 실패했습니다.")
+                }
+              }
+            })
+          },
+          goToPage(page) {
+            if (page >= 1 && page <= this.totalPages) {
+              this.currentPage = page
+              this.selectedItems = []
+            }
+          },
+          toggleSelectAll(event) {
+            if (event.target.checked) {
+              this.selectedItems = [...this.paginatedCases]
+            } else {
+              this.selectedItems = []
+            }
+          },
+          editItem(item) {
+            console.log('수정할 항목:', item)
+            this.originalEditItem = item
+            this.editForm = {
+              id: item.id,
+              NO: item.NO,
+              고객사: item.고객사 || '',
+              사업명: item.사업명 || '',
+              사업기간: item.사업기간 || ''
+            }
+            this.isEditModalOpen = true
+          },
+          saveEdit() {
+            if (!this.editForm.고객사 || !this.editForm.사업명 || !this.editForm.사업기간) {
+              alert("모든 필드를 입력해주세요.")
+              return
+            }
+            
+            const updatedRow = {
+              NO: this.editForm.NO,
+              고객사: this.editForm.고객사,
+              사업명: this.editForm.사업명,
+              사업기간: this.editForm.사업기간,
+              카테고리: '구축사례'
+            }
+            
+            console.log('수정 요청:', {
+              tableName: 'TB_NOTICE1',
+              row: updatedRow,
+              option: { rowId: this.editForm.NO }
+            })
+            
+            http({
+              uri: "게시판수정", 
+              method: "patch", 
+              param: { 
+                api_key, 
+                tableName: 'TB_NOTICE1', 
+                row: updatedRow,
+                option: { rowId: this.editForm.NO }
+              }, 
+              cb: (res) => {
+                console.log('수정 응답:', res)
+                if (res.code === 0) {
+                  alert("수정되었습니다.")
+                  this.closeEditModal()
+                  this.loadConstructionCases()
+                } else {
+                  alert("수정에 실패했습니다: " + (res.msg || res.message || '알 수 없는 오류'))
+                }
+              },
+              ecb: (error) => {
+                console.error('수정 오류:', error)
+                alert("수정 중 오류가 발생했습니다.")
+              }
+            })
+          },
+          closeEditModal() {
+            this.isEditModalOpen = false
+            this.editForm = {
+              id: null,
+              NO: null,
+              고객사: '',
+              사업명: '',
+              사업기간: ''
+            }
+            this.originalEditItem = null
+          },
+          deleteItem(item) {
+            console.log('삭제할 항목:', item)
+            if (confirm(`"${item.고객사} - ${item.사업명}" 구축사례를 삭제하시겠습니까?`)) {
+              http({
+                uri: "게시판삭제", 
+                method: "delete", 
+                param: { 
+                  api_key,
+                  tableName: 'TB_NOTICE1', 
+                  option: { rowId: item.NO }
+                }, 
+                cb: (res) => {
+                  console.log('서버 삭제 응답:', res)
+                  if (res.code === 0) {
+                    alert("삭제되었습니다.")
+                    this.loadConstructionCases()
+                  } else {
+                    alert("삭제에 실패했습니다: " + (res.msg || res.message || '알 수 없는 오류'))
+                  }
+                },
+                ecb: (error) => {
+                  console.error('서버 삭제 오류:', error)
+                  alert("삭제 중 오류가 발생했습니다.")
+                }
+              })
+            }
+          },
+          deleteSelected() {
+            if (this.selectedItems.length === 0) {
+              alert("삭제할 항목을 선택해주세요.")
+              return
+            }
+            
+            if (confirm(`선택한 ${this.selectedItems.length}개의 구축사례를 삭제하시겠습니까?`)) {
+              let deletedCount = 0
+              let errorCount = 0
+              
+              this.selectedItems.forEach((item, index) => {
+                http({
+                  uri: "게시판삭제", 
+                  method: "delete", 
+                  param: { 
+                    api_key,
+                    tableName: 'TB_NOTICE1', 
+                    option: { rowId: item.NO }
+                  }, 
+                  cb: (res) => {
+                    if (res.code === 0) {
+                      deletedCount++
+                    } else {
+                      errorCount++
+                    }
+                    
+                    // 마지막 항목 처리 완료 시
+                    if (deletedCount + errorCount === this.selectedItems.length) {
+                      if (errorCount === 0) {
+                        alert(`${deletedCount}개 항목이 삭제되었습니다.`)
+                      } else {
+                        alert(`${deletedCount}개 항목 삭제 성공, ${errorCount}개 항목 삭제 실패`)
+                      }
+                      this.selectedItems = []
+                      this.loadConstructionCases()
+                    }
+                  },
+                  ecb: (error) => {
+                    console.error('서버 삭제 오류:', error)
+                    errorCount++
+                    
+                    if (deletedCount + errorCount === this.selectedItems.length) {
+                      alert(`${deletedCount}개 항목 삭제 성공, ${errorCount}개 항목 삭제 실패`)
+                      this.selectedItems = []
+                      this.loadConstructionCases()
+                    }
+                  }
+                })
+              })
+            }
+          },
+          goToAdd() {
+            window.location.href = '/어드민/구축사례쓰기'
+          },
+          formatDate(dateStr) {
+            if (!dateStr) return ''
+            try {
+              const date = new Date(dateStr)
+              return date.toLocaleDateString('ko-KR')
+            } catch (e) {
+              return dateStr
+            }
+          },
+          deselect() {
+          }
+        },
+        mounted() {
+          this.loadConstructionCases()
+        }
+      })
+
+    style.
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      
+      .admin-table th,
+      .admin-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      
+      .admin-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+      
+      .checkbox-col { width: 40px; text-align: center; }
+      .no-col { width: 60px; text-align: center; }
+      .customer-col { width: 150px; }
+      .project-col { width: 250px; }
+      .period-col { width: 150px; }
+      .date-col { width: 120px; }
+      .action-col { width: 120px; text-align: center; }
+      
+      .edit-btn, .delete-btn {
+        padding: 6px 12px;
+        margin: 0 2px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      
+      .edit-btn {
+        background-color: #007bff;
+        color: white;
+      }
+      
+      .edit-btn:hover {
+        background-color: #0056b3;
+      }
+      
+      .delete-btn {
+        background-color: #dc3545;
+        color: white;
+      }
+      
+      .delete-btn:hover {
+        background-color: #c82333;
+      }
+      
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+      }
+      
+      .pagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .pagination-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        color: #374151;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+      
+      .pagination-btn:hover:not(:disabled) {
+        background-color: #f3f4f6;
+        border-color: #9ca3af;
+      }
+      
+      .pagination-btn.active {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+      }
+      
+      .pagination-btn:disabled {
+        background-color: #f9fafb;
+        color: #d1d5db;
+        cursor: not-allowed;
+      }
+      
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+      }
+      
+      .modal-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      
+      .modal-card {
+        position: relative;
+        width: 90%;
+        max-width: 500px;
+        margin: 50px auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .modal-card-head {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .modal-card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+      }
+      
+      .modal-card-body {
+        padding: 20px;
+      }
+      
+      .modal-card-foot {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+      
+      .field {
+        margin-bottom: 15px;
+      }
+      
+      .label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+      
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      
+      .button {
+        padding: 10px 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        background: white;
+      }
+      
+      .button.is-success {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+      }
+      
+      .button.is-success:hover {
+        background-color: #218838;
+      }
+      
+      .delete {
+        width: 24px;
+        height: 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: relative;
+      }
+      
+      .delete:before,
+      .delete:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 2px;
+        background: #999;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+      
+      .delete:after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      } 
