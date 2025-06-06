@@ -37,6 +37,53 @@ html(style='width: 100%;')
       .construction-header-section {
         background: #1a1a1a;
       }
+      
+      /* 페이징 스타일 */
+      .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+        gap: 10px;
+      }
+      .pagination-btn {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.3s;
+        font-size: 14px;
+        min-width: 40px;
+        text-align: center;
+      }
+      .pagination-btn:hover {
+        background: #f8f9fa;
+        border-color: #007bff;
+        color: #007bff;
+      }
+      .pagination-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+      .pagination-btn.disabled {
+        background: #f8f9fa;
+        color: #999;
+        cursor: not-allowed;
+        border-color: #e9ecef;
+      }
+      .pagination-btn.disabled:hover {
+        background: #f8f9fa;
+        color: #999;
+        border-color: #e9ecef;
+      }
+      .pagination-info {
+        color: #666;
+        font-size: 14px;
+        margin: 0 15px;
+      }
 
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
 
@@ -75,7 +122,7 @@ html(style='width: 100%;')
                   if notices && notices.length > 0
                     each notice, index in notices
                       tr(style="border-bottom: 1px solid #eee; transition: background 0.3s;")
-                        td(style="padding: 15px;")= notices.length - index
+                        td(style="padding: 15px;")= ((pagination.currentPage - 1) * pagination.itemsPerPage) + index + 1
                         td.customer-name(style="padding: 15px; font-weight: 500;")= notice.고객사 || '-'
                         td.project-name(style="padding: 15px;")= notice.사업명 || notice.제목 || '-'
                         td(style="padding: 15px; color: #666;")= notice.사업기간 || notice.작성일 || '-'
@@ -83,6 +130,33 @@ html(style='width: 100%;')
                     tr
                       td(colspan="4" style="padding: 40px; text-align: center; color: #999;")
                         .no-data 등록된 구축사례가 없습니다.
+            
+            // 페이징 네비게이션
+            if pagination && pagination.totalPages > 1
+              .pagination-wrapper
+                // 이전 페이지 버튼
+                if pagination.hasPrev
+                  a.pagination-btn(href=`/construction-cases?page=${pagination.prevPage}`) ‹ 이전
+                else
+                  span.pagination-btn.disabled ‹ 이전
+                
+                // 페이지 번호들
+                each page in pagination.pages
+                  if page.isCurrent
+                    span.pagination-btn.active= page.number
+                  else
+                    a.pagination-btn(href=`/construction-cases?page=${page.number}`)= page.number
+                
+                // 다음 페이지 버튼
+                if pagination.hasNext
+                  a.pagination-btn(href=`/construction-cases?page=${pagination.nextPage}`) 다음 ›
+                else
+                  span.pagination-btn.disabled 다음 ›
+                
+                // 페이지 정보
+                .pagination-info 
+                  span 총 #{pagination.totalItems}개 항목 (#{pagination.currentPage}/#{pagination.totalPages} 페이지)
+      
       bnb
       common-daemon
       
@@ -94,13 +168,21 @@ html(style='width: 100%;')
       },
       data: {
         themeClass: {mobile: isMobile},
-        notices: !{JSON.stringify(notices || [])}
+        notices: !{JSON.stringify(notices || [])},
+        pagination: !{JSON.stringify(pagination || {})}
       },
       methods: {
+        goToPage(page) {
+          if (page >= 1 && page <= this.pagination.totalPages) {
+            window.location.href = `/construction-cases?page=${page}`
+          }
+        }
       },
       computed: {
       },
       created() {
+        console.log('구축사례 데이터:', this.notices)
+        console.log('페이징 정보:', this.pagination)
       },
       mounted() {
       },

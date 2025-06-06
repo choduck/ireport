@@ -495,8 +495,12 @@ app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 	console.log(md.mobile())
 	
 	try {
+		// 페이지 파라미터 가져오기 (기본값: 1)
+		const currentPage = parseInt(req.query.page) || 1
+		const itemsPerPage = 10 // 페이지당 항목 수
+		
 		// 구축사례 데이터 가져오기
-		let notices = []
+		let allNotices = []
 		
 		// 하드코딩된 기본 구축사례 데이터 (백업용)
 		const defaultCases = [
@@ -555,7 +559,7 @@ app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 				console.log('필터링된 구축사례:', constructionCases)
 				
 				if (constructionCases.length > 0) {
-					notices = constructionCases.map(notice => {
+					allNotices = constructionCases.map(notice => {
 						return {
 							고객사: notice['고객사'] || notice['제목'] || '-',
 							사업명: notice['사업명'] || notice['국문제목'] || notice['내용'] || notice['국문내용'] || '-',
@@ -573,24 +577,57 @@ app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 			}
 			
 			// 데이터베이스에서 조회된 데이터가 없으면 기본 데이터 사용
-			if (notices.length === 0) {
+			if (allNotices.length === 0) {
 				console.log('DB에서 조회된 구축사례가 없어 기본 데이터 사용')
-				notices = defaultCases
+				allNotices = defaultCases
 			}
 			
 		} catch (error) {
 			console.log('데이터베이스 조회 실패, 기본 데이터 사용:', error.message)
-			notices = defaultCases
+			allNotices = defaultCases
 		}
 		
-		console.log('최종 구축사례 데이터:', notices)
+		// 페이징 계산
+		const totalItems = allNotices.length
+		const totalPages = Math.ceil(totalItems / itemsPerPage)
+		const startIndex = (currentPage - 1) * itemsPerPage
+		const endIndex = startIndex + itemsPerPage
+		const notices = allNotices.slice(startIndex, endIndex)
+		
+		// 페이징 네비게이션 정보
+		const pagination = {
+			currentPage: currentPage,
+			totalPages: totalPages,
+			totalItems: totalItems,
+			itemsPerPage: itemsPerPage,
+			hasNext: currentPage < totalPages,
+			hasPrev: currentPage > 1,
+			nextPage: currentPage + 1,
+			prevPage: currentPage - 1,
+			pages: []
+		}
+		
+		// 페이지 번호 배열 생성 (최대 5개 페이지 번호 표시)
+		const startPage = Math.max(1, currentPage - 2)
+		const endPage = Math.min(totalPages, startPage + 4)
+		
+		for (let i = startPage; i <= endPage; i++) {
+			pagination.pages.push({
+				number: i,
+				isCurrent: i === currentPage
+			})
+		}
+		
+		console.log('페이징 정보:', pagination)
+		console.log('현재 페이지 구축사례 데이터:', notices)
 		
 		res.render('construction-cases', {
 			mobile: !!md.mobile(), 
 			axiosAddr: baseURL, 
 			title: seo[req.url] ? seo[req.url].title : '구축사례 | 아이리포트', 
 			description: seo[req.url] ? seo[req.url].description : 'AI 비전 솔루션 구축사례를 소개합니다.', 
-			notices: notices 
+			notices: notices,
+			pagination: pagination
 		})
 	} catch (error) {
 		console.error('구축사례 페이지 렌더링 오류:', error)
@@ -613,7 +650,16 @@ app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 					사업기간: '2025.01 ~ 2025.04',
 					작성일: '2025-01-02'
 				}
-			]
+			],
+			pagination: {
+				currentPage: 1,
+				totalPages: 1,
+				totalItems: 2,
+				itemsPerPage: 10,
+				hasNext: false,
+				hasPrev: false,
+				pages: [{number: 1, isCurrent: true}]
+			}
 		})
 	}
 })
