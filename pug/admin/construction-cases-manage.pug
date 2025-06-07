@@ -194,10 +194,11 @@ html(style='width: 100%;')
                       })
                     }
                     
+                    // NO 기준 내림차순 정렬 (큰 번호가 먼저 = 최신순)
                     this.constructionCases = constructionData.sort((a, b) => {
-                      const dateA = new Date(a.일시 || a.작성일 || a.일자)
-                      const dateB = new Date(b.일시 || b.작성일 || b.일자)
-                      return dateB - dateA
+                      const noA = Number(a.NO) || 0
+                      const noB = Number(b.NO) || 0
+                      return noB - noA
                     })
                   } else {
                     this.constructionCases = []

@@ -551,27 +551,43 @@ app.get(['/construction-cases'], pageViewAspect, async (req, res, next) => {
 			console.log('데이터 타입:', typeof allData, '배열 여부:', Array.isArray(allData))
 			
 			if (allData && Array.isArray(allData) && allData.length > 0) {
+				// 디버깅: 전체 데이터 확인
+				console.log('전체 데이터 중 첫 5개:')
+				allData.slice(0, 5).forEach(item => {
+					console.log(`  카테고리: ${item.카테고리}, 고객사: ${item.고객사}, 일시: ${item.일시}, NO: ${item.NO}`)
+				})
+				
 				// 구축사례만 필터링
 				const constructionCases = allData.filter(item => 
 					item && item['카테고리'] === '구축사례'
 				)
 				
-				console.log('필터링된 구축사례:', constructionCases)
+				console.log('구축사례 개수:', constructionCases.length)
 				
 				if (constructionCases.length > 0) {
+					// NO 기준 내림차순 정렬 (큰 번호가 먼저 = 최신순)
+					constructionCases.sort((a, b) => {
+						const noA = Number(a.NO) || 0
+						const noB = Number(b.NO) || 0
+						return noB - noA
+					})
+					
+					console.log('NO 기준 정렬 후 구축사례 첫 5개:')
+					constructionCases.slice(0, 5).forEach(item => {
+						console.log(`  고객사: ${item.고객사}, NO: ${item.NO}, 일시: ${item.일시}`)
+					})
+					
+					// 정렬된 데이터를 매핑
 					allNotices = constructionCases.map(notice => {
 						return {
+							NO: notice.NO,
+							id: notice.id,
 							고객사: notice['고객사'] || notice['제목'] || '-',
 							사업명: notice['사업명'] || notice['국문제목'] || notice['내용'] || notice['국문내용'] || '-',
-							사업기간: notice['사업기간'] || notice['작성일'] || '-',
-							작성일: notice['작성일'] || notice['일자']
+							사업기간: notice['사업기간'] || '-',
+							작성일: notice['작성일'] || notice['일자'] || notice['일시'],
+							일시: notice['일시']
 						}
-					}).sort((a, b) => {
-						// 작성일 기준 내림차순 정렬 (최신순)
-						if (a.작성일 && b.작성일) {
-							return new Date(b.작성일) - new Date(a.작성일)
-						}
-						return 0
 					})
 				}
 			}
